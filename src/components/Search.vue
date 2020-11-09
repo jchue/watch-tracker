@@ -97,7 +97,7 @@ export default {
   }
 
   li li a {
-    color: #000;
+    color: #333;
     display: block;
     padding: 5px 40px;
     text-decoration: none;
@@ -121,10 +121,14 @@ export default {
 }
 
 input {
-  border: 1px solid #ddd;
+  background-color: rgba(0, 0, 0, 0.07);
+  border: none;
+  border-radius: 4px;
+  color: #333;
   font-family: Arial, Helvetica, sans-serif;
   font-size: 1rem;
   margin: 0 10px;
+  outline: none;
   padding: 8px 10px;
 }
 </style>

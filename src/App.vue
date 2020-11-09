@@ -1,10 +1,16 @@
 <template>
-  <header>
-    <span id="site-title">Watch Tracker</span>
+  <header id="site-header">
+    <div class="wrapper">
+      <span id="site-title">Watch Tracker</span>
 
-    <Search></Search>
+      <Search></Search>
+    </div>
   </header>
-  <router-view :key="$route.fullPath"/>
+  <main id="site-content">
+    <div class="wrapper">
+      <router-view :key="$route.fullPath"/>
+    </div>
+  </main>
 </template>
 
 <script>
@@ -18,28 +24,36 @@ export default {
 </script>
 
 <style lang="scss">
+@import-normalize;
+
+body {
+  background-color: #f2f2f2;
+  color: #333;
+  margin: 0;
+}
+
 #app {
-  font-family: Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+#site-header {
+  background-color: rgba(0, 0, 0, 0.1);
+  color: #333;
+  padding: 10px 20px;
 }
 
 #site-title {
-  font-size: 14px;
+  font-size: 1rem;
   font-weight: bold;
+  margin-right: 40px;
 }
 
-#main-nav {
-  padding: 30px;
+#site-content {
+  padding-top: 40px;
+}
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
+.wrapper {
+  margin: auto;
+  max-width: 960px;
 }
 </style>
