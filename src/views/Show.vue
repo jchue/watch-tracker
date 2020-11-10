@@ -51,7 +51,7 @@
 
             <ol>
               <li v-for="episode in season.episodes" v-bind:key="episode.id">
-                <h5>{{ episode.name }}</h5>
+                <h5>{{ episode.name }} <indicator v-bind:watched="episode.watched"></indicator></h5>
                 <p>{{ episode.overview }}</p>
               </li>
             </ol>
@@ -64,6 +64,7 @@
 
 <script>
 import axios from 'axios';
+import Indicator from '@/components/WatchedIndicator.vue';
 
 const apiKey     = process.env.VUE_APP_API_KEY;
 const imgBaseUrl = process.env.VUE_APP_IMG_BASE_URL;
@@ -75,7 +76,10 @@ const config = {
 };
 
 export default {
-  name: 'Show',
+  name      : 'Show',
+  components: {
+    Indicator,
+  },
   data() {
     return {
       cast     : [],
@@ -126,6 +130,12 @@ export default {
       if (!this.seasons[seasonIndex].episodes) {
         this.getSeasonDetails(seasonNumber).then(() => {
           this.seasons[seasonIndex].visible = !this.seasons[seasonIndex].visible;
+
+          this.seasons[seasonIndex].episodes.forEach((episode) => {
+            this.getWatchedStatus(episode.id).then((status) => {
+              episode.watched = status;
+            });
+          });
         });
       } else {
         this.seasons[seasonIndex].visible = !this.seasons[seasonIndex].visible;
@@ -141,6 +151,20 @@ export default {
           .then((response) => {
             this.seasons[seasonIndex] = response.data;
             resolve();
+          });
+      });
+
+      return promise;
+    },
+    getWatchedStatus(id) {
+      const promise = new Promise((resolve) => {
+        axios
+          .get(`http://localhost:3000/shows/id/seasons/id/episodes/${id}`)
+          .then((response) => {
+            resolve(response.data.watched);
+          })
+          .catch(() => {
+            resolve(false);
           });
       });
 
