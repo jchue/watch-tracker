@@ -41,7 +41,17 @@
     <ul>
       <li v-for="season in seasons" v-bind:key="season.id">
         <h3>{{ season.name }}</h3>
+
         <p>{{ season.overview }}</p>
+
+        <h4>Episodes</h4>
+
+        <ol>
+          <li v-for="episode in season.episodes" v-bind:key="episode.id">
+            <h5>{{ episode.name }}</h5>
+            <p>{{ episode.overview }}</p>
+          </li>
+        </ol>
       </li>
     </ul>
   </div>
@@ -85,6 +95,14 @@ export default {
         this.seasons   = response.data.seasons;
         this.posterUrl = `${imgBaseUrl}w300${response.data.poster_path}`;
         this.website   = response.data.homepage;
+
+        this.seasons.forEach((season, index) => {
+          axios
+            .get(`https://api.themoviedb.org/3/tv/${this.id}/season/${season.season_number}`, config)
+            .then((response2) => {
+              this.seasons[index] = response2.data;
+            });
+        });
       });
 
     axios

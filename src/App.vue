@@ -43,6 +43,10 @@ p {
   margin: 0 0 2rem 0;
 }
 
+li {
+  line-height: 1.7;
+}
+
 #app {
   font-family: Arial, Helvetica, sans-serif;
 }
