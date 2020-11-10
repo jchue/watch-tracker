@@ -32,6 +32,17 @@ body {
   margin: 0;
 }
 
+h1 {
+  font-size: 3rem;
+  line-height: 1;
+  margin: 0 0 2rem 0;
+}
+
+p {
+  line-height: 1.7;
+  margin: 0 0 2rem 0;
+}
+
 #app {
   font-family: Arial, Helvetica, sans-serif;
 }
