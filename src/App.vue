@@ -8,7 +8,7 @@
   </header>
   <main id="site-content">
     <div class="wrapper">
-      <router-view :key="$route.fullPath"/>
+      <transition name="fade" mode="out-in"><router-view :key="$route.fullPath"/></transition>
     </div>
   </main>
 </template>
@@ -82,5 +82,17 @@ li {
 .wrapper {
   margin: auto;
   max-width: 960px;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s;
+}
+
+.fade-enter-active {
+  transition-delay: 0.25s;
+}
+
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
 }
 </style>
