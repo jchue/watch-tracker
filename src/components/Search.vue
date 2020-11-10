@@ -30,7 +30,7 @@ export default {
   name: 'Search',
   data() {
     return {
-      query: '',
+      query  : '',
       results: {},
     };
   },
@@ -39,14 +39,14 @@ export default {
       this.results = {
         movies: [],
         people: [],
-        shows: [],
+        shows : [],
       };
 
       if (this.query) {
         const config = {
           params: {
             api_key: apiKey,
-            query: this.query,
+            query  : this.query,
           },
         };
 
@@ -122,7 +122,7 @@ export default {
 
 input {
   background-color: rgba(0, 0, 0, 0.07);
-  border: none;
+  border: 3px solid rgba(0, 0, 0, 0);
   border-radius: 4px;
   color: #333;
   font-family: Arial, Helvetica, sans-serif;
@@ -130,5 +130,10 @@ input {
   margin: 0 10px;
   outline: none;
   padding: 8px 10px;
+  transition: border 0.1s;
+
+  &:focus {
+    border: 3px solid rgba(0, 0, 0, 0.08);
+  }
 }
 </style>
