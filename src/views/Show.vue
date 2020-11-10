@@ -36,24 +36,29 @@
       </ul>
     </section>
 
-    <h2>Seasons</h2>
+    <section class="seasons">
+      <h2>Seasons</h2>
 
-    <ul>
-      <li v-for="season in seasons" v-bind:key="season.id">
-        <h3>{{ season.name }}</h3>
+      <ul>
+        <li v-for="season in seasons" v-bind:key="season.id">
 
-        <p>{{ season.overview }}</p>
+          <h3 v-on:click="toggleSeason(season.season_number)" class="season-name">{{ season.name }}</h3>
 
-        <h4>Episodes</h4>
+          <section v-bind:class="['season-details', { 'visible': season.visible }]">
+            <p v-if="season.overview">{{ season.overview }}</p>
 
-        <ol>
-          <li v-for="episode in season.episodes" v-bind:key="episode.id">
-            <h5>{{ episode.name }}</h5>
-            <p>{{ episode.overview }}</p>
-          </li>
-        </ol>
-      </li>
-    </ul>
+            <h4>Episodes</h4>
+
+            <ol>
+              <li v-for="episode in season.episodes" v-bind:key="episode.id">
+                <h5>{{ episode.name }}</h5>
+                <p>{{ episode.overview }}</p>
+              </li>
+            </ol>
+          </section>
+        </li>
+      </ul>
+    </section>
   </div>
 </template>
 
@@ -62,6 +67,12 @@ import axios from 'axios';
 
 const apiKey     = process.env.VUE_APP_API_KEY;
 const imgBaseUrl = process.env.VUE_APP_IMG_BASE_URL;
+
+const config = {
+  params: {
+    api_key: apiKey,
+  },
+};
 
 export default {
   name: 'Show',
@@ -79,12 +90,6 @@ export default {
     };
   },
   mounted() {
-    const config = {
-      params: {
-        api_key: apiKey,
-      },
-    };
-
     axios
       .get(`https://api.themoviedb.org/3/tv/${this.id}`, config)
       .then((response) => {
@@ -95,14 +100,6 @@ export default {
         this.seasons   = response.data.seasons;
         this.posterUrl = `${imgBaseUrl}w300${response.data.poster_path}`;
         this.website   = response.data.homepage;
-
-        this.seasons.forEach((season, index) => {
-          axios
-            .get(`https://api.themoviedb.org/3/tv/${this.id}/season/${season.season_number}`, config)
-            .then((response2) => {
-              this.seasons[index] = response2.data;
-            });
-        });
       });
 
     axios
@@ -120,6 +117,35 @@ export default {
             });
         });
       });
+  },
+  methods: {
+    toggleSeason(seasonNumber) {
+      // Find array index
+      const seasonIndex = this.seasons.findIndex((season) => season.season_number === seasonNumber);
+
+      if (!this.seasons[seasonIndex].episodes) {
+        this.getSeasonDetails(seasonNumber).then(() => {
+          this.seasons[seasonIndex].visible = !this.seasons[seasonIndex].visible;
+        });
+      } else {
+        this.seasons[seasonIndex].visible = !this.seasons[seasonIndex].visible;
+      }
+    },
+    getSeasonDetails(seasonNumber) {
+      const promise = new Promise((resolve) => {
+        // Find array index
+        const seasonIndex = this.seasons.findIndex((season) => season.season_number === seasonNumber);
+
+        axios
+          .get(`https://api.themoviedb.org/3/tv/${this.id}/season/${seasonNumber}`, config)
+          .then((response) => {
+            this.seasons[seasonIndex] = response.data;
+            resolve();
+          });
+      });
+
+      return promise;
+    },
   },
 };
 </script>
@@ -193,6 +219,44 @@ export default {
         vertical-align: middle;
       }
     }
+  }
+}
+
+.seasons {
+  ul {
+    list-style-type: none;
+    padding: 0;
+
+    li {
+      background-color: #f9f9f9;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+  }
+}
+
+.season-name {
+  border-radius: 10px;
+  margin: 0;
+  padding: 10px 20px;
+  transition: background 0.2s;
+
+  &:hover {
+    background-color: #fff;
+    cursor: pointer;
+  }
+}
+
+.season-details {
+  box-sizing: border-box;
+  max-height: 0;
+  overflow: hidden;
+  padding: 0 20px;
+  transition: max-height 0.7s, padding 0.7s;
+
+  &.visible {
+    max-height: 9999px;
+    padding: 20px;
   }
 }
 </style>
