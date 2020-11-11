@@ -49,12 +49,29 @@
 
             <h4>Episodes</h4>
 
-            <ol>
-              <li v-for="episode in season.episodes" v-bind:key="episode.id">
-                <h5>{{ episode.name }} <indicator v-bind:watched="episode.watched"></indicator></h5>
-                <p>{{ episode.overview }}</p>
-              </li>
-            </ol>
+            <table class="episodes">
+              <thead>
+                <tr>
+                  <th class="watched-indicator">Viewed</th>
+                  <th class="episode-number">#</th>
+                  <th class="title">Title</th>
+                  <th class="air-date">Air Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="episode in season.episodes" v-bind:key="episode.id">
+                  <td class="watched-indicator"><indicator v-bind:watched="episode.watched" v-on:click="toggleWatchedStatus(episode)"></indicator></td>
+                  <td class="episode-number">{{ episode.episode_number }}</td>
+                  <td class="title">{{ episode.name }}</td>
+                  <td class="air-date">{{ episode.air_date }}</td>
+
+                  <div class="episode-details">
+                    <img v-bind:src="episode.stillUrl">
+                    <p>{{ episode.overview }}</p>
+                  </div>
+                </tr>
+              </tbody>
+            </table>
           </section>
         </li>
       </ul>
@@ -64,6 +81,7 @@
 
 <script>
 import axios from 'axios';
+import { DateTime } from 'luxon';
 import Indicator from '@/components/WatchedIndicator.vue';
 
 const apiKey     = process.env.VUE_APP_API_KEY;
@@ -150,6 +168,11 @@ export default {
           .get(`https://api.themoviedb.org/3/tv/${this.id}/season/${seasonNumber}`, config)
           .then((response) => {
             this.seasons[seasonIndex] = response.data;
+
+            this.seasons[seasonIndex].episodes.forEach((episode) => {
+              episode.air_date = DateTime.fromISO(episode.air_date).toLocaleString();
+              episode.stillUrl = `${imgBaseUrl}w185${episode.still_path}`;
+            });
             resolve();
           });
       });
@@ -159,13 +182,38 @@ export default {
     getWatchedStatus(id) {
       const promise = new Promise((resolve) => {
         axios
-          .get(`http://localhost:3000/shows/id/seasons/id/episodes/${id}`)
+          .get(`http://localhost:3000/records/${id}`)
           .then((response) => {
             resolve(response.data.watched);
           })
           .catch(() => {
             resolve(false);
           });
+      });
+
+      return promise;
+    },
+    toggleWatchedStatus(episode) {
+      const promise = new Promise((resolve) => {
+        if (!episode.watched) {
+          const body = {
+            mediaType: 'tv',
+          };
+
+          axios
+            .post(`http://localhost:3000/records/${episode.id}`, body)
+            .then(() => {
+              episode.watched = true;
+              resolve();
+            });
+        } else {
+          axios
+            .delete(`http://localhost:3000/records/${episode.id}`)
+            .then(() => {
+              episode.watched = false;
+              resolve();
+            });
+        }
       });
 
       return promise;
@@ -262,7 +310,7 @@ export default {
 .season-name {
   border-radius: 10px;
   margin: 0;
-  padding: 10px 20px;
+  padding: 1rem 2rem;
   transition: background 0.2s;
 
   &:hover {
@@ -275,12 +323,50 @@ export default {
   box-sizing: border-box;
   max-height: 0;
   overflow: hidden;
-  padding: 0 20px;
+  padding: 0 2rem;
   transition: max-height 0.7s, padding 0.7s;
 
   &.visible {
     max-height: 9999px;
-    padding: 20px;
+    padding: 2rem;
   }
+}
+
+.episodes {
+  border-collapse: collapse;
+  color: #555;
+  font-size: 0.875rem;
+  width: 100%;
+
+  th {
+    border-bottom: 2px solid #ddd;
+    font-weight: bold;
+    padding: 10px 15px;
+  }
+
+  td {
+    border-bottom: 1px solid #ddd;
+    padding: 10px 15px;
+  }
+
+  .watched-indicator {
+    box-sizing: border-box;
+    text-align: center;
+    width: 30px;
+  }
+
+  .episode-number{
+    box-sizing: border-box;
+    text-align: right;
+    width: 30px;
+  }
+
+  .air-date {
+    text-align: right;
+  }
+}
+
+.episode-details {
+  display: none;
 }
 </style>

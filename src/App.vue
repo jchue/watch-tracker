@@ -39,10 +39,12 @@ h1 {
 }
 
 h2 {
+  font-size: 2rem;
   margin: 0 0 2rem 0;
 }
 
 h3 {
+  font-size: 1.5rem;
   margin: 0 0 2rem 0;
 }
 
