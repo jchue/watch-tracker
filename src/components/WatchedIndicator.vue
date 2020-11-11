@@ -6,7 +6,7 @@
 
 <script>
 export default {
-  name : 'Indicator',
+  name: 'Indicator',
   props: ['watched'],
 };
 </script>

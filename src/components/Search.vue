@@ -4,17 +4,23 @@
     <ul class="results" v-if="query">
       <li><span class="type">TV Shows</span>
         <ul>
-          <li v-for="result in results.shows" v-bind:key="result.id"><router-link v-bind:to="'/shows/' + result.id">{{ result.name }}</router-link></li>
+          <li v-for="result in results.shows" v-bind:key="result.id">
+            <router-link v-bind:to="'/shows/' + result.id">{{ result.name }}</router-link>
+          </li>
         </ul>
       </li>
       <li><span class="type">Movies</span>
         <ul>
-          <li v-for="result in results.movies" v-bind:key="result.id"><router-link v-bind:to="'/movies/' + result.id">{{ result.title }}</router-link></li>
+          <li v-for="result in results.movies" v-bind:key="result.id">
+            <router-link v-bind:to="'/movies/' + result.id">{{ result.title }}</router-link>
+          </li>
         </ul>
       </li>
       <li><span class="type">People</span>
         <ul>
-          <li v-for="result in results.people" v-bind:key="result.id"><router-link v-bind:to="'/people/' + result.id">{{ result.name }}</router-link></li>
+          <li v-for="result in results.people" v-bind:key="result.id">
+            <router-link v-bind:to="'/people/' + result.id">{{ result.name }}</router-link>
+          </li>
         </ul>
       </li>
     </ul>
@@ -30,7 +36,7 @@ export default {
   name: 'Search',
   data() {
     return {
-      query  : '',
+      query: '',
       results: {},
     };
   },
@@ -39,14 +45,14 @@ export default {
       this.results = {
         movies: [],
         people: [],
-        shows : [],
+        shows: [],
       };
 
       if (this.query) {
         const config = {
           params: {
             api_key: apiKey,
-            query  : this.query,
+            query: this.query,
           },
         };
 

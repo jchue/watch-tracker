@@ -1,16 +1,18 @@
 <template>
-  <header id="site-header">
-    <div class="wrapper">
-      <router-link to="/" id="site-title">Watch Tracker</router-link>
+  <div id="app">
+    <header id="site-header">
+      <div class="wrapper">
+        <router-link to="/" id="site-title">Watch Tracker</router-link>
 
-      <Search></Search>
-    </div>
-  </header>
-  <main id="site-content">
-    <div class="wrapper">
-      <transition name="fade" mode="out-in"><router-view :key="$route.fullPath"/></transition>
-    </div>
-  </main>
+        <Search></Search>
+      </div>
+    </header>
+    <main id="site-content">
+      <div class="wrapper">
+        <transition name="fade" mode="out-in"><router-view :key="$route.fullPath"/></transition>
+      </div>
+    </main>
+  </div>
 </template>
 
 <script>

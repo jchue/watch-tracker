@@ -92,7 +92,7 @@ import axios from 'axios';
 import { DateTime } from 'luxon';
 import Indicator from '@/components/WatchedIndicator.vue';
 
-const apiKey     = process.env.VUE_APP_API_KEY;
+const apiKey = process.env.VUE_APP_API_KEY;
 const imgBaseUrl = process.env.VUE_APP_IMG_BASE_URL;
 
 const config = {
@@ -102,40 +102,40 @@ const config = {
 };
 
 export default {
-  name      : 'Show',
+  name: 'Show',
   components: {
     Indicator,
   },
   data() {
     return {
-      cast     : [],
-      genres   : [],
-      id       : this.$route.params.id,
-      overview : '',
+      cast: [],
+      genres: [],
+      id: this.$route.params.id,
+      overview: '',
       posterUrl: '',
-      score    : 0,
-      seasons  : [],
-      title    : '',
-      website  : '',
+      score: 0,
+      seasons: [],
+      title: '',
+      website: '',
     };
   },
   mounted() {
     axios
       .get(`https://api.themoviedb.org/3/tv/${this.id}`, config)
       .then((response) => {
-        this.genres    = response.data.genres;
-        this.title     = response.data.name;
-        this.overview  = response.data.overview;
-        this.score     = response.data.vote_average;
-        this.seasons   = response.data.seasons;
+        this.genres = response.data.genres;
+        this.title = response.data.name;
+        this.overview = response.data.overview;
+        this.score = response.data.vote_average;
+        this.seasons = response.data.seasons;
         this.posterUrl = `${imgBaseUrl}w300${response.data.poster_path}`;
-        this.website   = response.data.homepage;
+        this.website = response.data.homepage;
       });
 
     axios
       .get(`https://api.themoviedb.org/3/tv/${this.id}/credits`, config)
       .then((response) => {
-        this.cast      = response.data.cast;
+        this.cast = response.data.cast;
 
         this.cast.forEach((member) => {
           axios
