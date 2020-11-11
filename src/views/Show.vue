@@ -56,19 +56,27 @@
                   <th class="episode-number">#</th>
                   <th class="title">Title</th>
                   <th class="air-date">Air Date</th>
+                  <th class="hidden"></th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-for="episode in season.episodes" v-bind:key="episode.id">
                   <td class="watched-indicator"><indicator v-bind:watched="episode.watched" v-on:click="toggleWatchedStatus(episode)"></indicator></td>
-                  <td class="episode-number">{{ episode.episode_number }}</td>
-                  <td class="title">{{ episode.name }}</td>
-                  <td class="air-date">{{ episode.air_date }}</td>
-
-                  <div class="episode-details">
-                    <img v-bind:src="episode.stillUrl">
-                    <p>{{ episode.overview }}</p>
-                  </div>
+                  <td class="episode-number" v-on:click="showEpisodeDetails(episode)">{{ episode.episode_number }}</td>
+                  <td class="title" v-on:click="showEpisodeDetails(episode)">{{ episode.name }}</td>
+                  <td class="air-date" v-on:click="showEpisodeDetails(episode)">{{ episode.air_date }}</td>
+                  <td class="hidden">
+                    <transition name="fade">
+                      <div class="episode-details" v-show="episode.detailsVisible">
+                        <div class="scrim" v-on:click="hideEpisodeDetails(episode)"></div>
+                        <div class="overlay">
+                          <img v-bind:src="episode.stillUrl" class="episode-still">
+                          <h4 class="episode-title">{{ episode.name }}</h4>
+                          <p class="episode-overview">{{ episode.overview }}</p>
+                        </div>
+                      </div>
+                    </transition>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -218,6 +226,12 @@ export default {
 
       return promise;
     },
+    showEpisodeDetails(episode) {
+      episode.detailsVisible = true;
+    },
+    hideEpisodeDetails(episode) {
+      episode.detailsVisible = false;
+    },
   },
 };
 </script>
@@ -338,6 +352,11 @@ export default {
   font-size: 0.875rem;
   width: 100%;
 
+  tr:hover td {
+    background-color: #eee;
+    cursor: pointer;
+  }
+
   th {
     border-bottom: 2px solid #ddd;
     font-weight: bold;
@@ -345,8 +364,10 @@ export default {
   }
 
   td {
+    background-color: transparent;
     border-bottom: 1px solid #ddd;
     padding: 10px 15px;
+    transition: background 0.2s;
   }
 
   .watched-indicator {
@@ -364,9 +385,50 @@ export default {
   .air-date {
     text-align: right;
   }
+
+  .hidden {
+    width: 0;
+  }
 }
 
 .episode-details {
-  display: none;
+  .overlay {
+    background-color: #fff;
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
+    left: 50%;
+    padding: 2rem;
+    position: fixed;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 720px;
+    z-index: 2;
+
+    &:hover {
+      cursor: default;
+    }
+
+    .episode-title {
+      margin-bottom: 1rem;
+    }
+
+    .episode-still {
+      float: left;
+      margin-right: 20px;
+    }
+  }
+
+  .scrim {
+    background-color: rgba(255, 255, 255, 0.8);
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    z-index: 1;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
 }
 </style>
