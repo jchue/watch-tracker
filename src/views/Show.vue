@@ -71,7 +71,11 @@
                         <div class="scrim" v-on:click="hideEpisodeDetails(episode)"></div>
                         <div class="overlay">
                           <img v-bind:src="episode.stillUrl" class="episode-still">
-                          <h4 class="episode-title">{{ episode.name }}</h4>
+                          <header>
+                            <h4 class="episode-title">Episode {{ episode.episode_number }}: {{ episode.name }}</h4>
+                            <span class="episode-air-date">{{ episode.air_date }}</span>
+                          </header>
+                          <span class="episode-score"><strong>Score:</strong> {{ episode.vote_count ? episode.vote_average + '/10' : 'N/A' }}</span>
                           <p class="episode-overview">{{ episode.overview }}</p>
                         </div>
                       </div>
@@ -407,13 +411,32 @@ export default {
       cursor: default;
     }
 
-    .episode-title {
+    header {
+      display: inline-block;
       margin-bottom: 1rem;
+
+      .episode-title {
+        display: inline;
+        margin: 0 10px 0 0;
+      }
+
+      .episode-air-date {
+        color: #aaa;
+        display: inline;
+      }
+    }
+
+    .episode-score {
+      float: right;
     }
 
     .episode-still {
       float: left;
       margin-right: 20px;
+    }
+
+    *:last-child {
+      margin-bottom: 0;
     }
   }
 
