@@ -1,7 +1,7 @@
 <template>
   <header id="site-header">
     <div class="wrapper">
-      <span id="site-title">Watch Tracker</span>
+      <router-link to="/" id="site-title">Watch Tracker</router-link>
 
       <Search></Search>
     </div>
@@ -72,9 +72,11 @@ li {
 }
 
 #site-title {
+  color: #333;
   font-size: 1rem;
   font-weight: bold;
   margin-right: 40px;
+  text-decoration: none;
 }
 
 #site-content {
