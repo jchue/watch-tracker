@@ -1,6 +1,6 @@
 <template>
   <div class="404">
-    <h1>404 Not Found</h1>
+    <h1>{{ title }}</h1>
   </div>
 </template>
 
@@ -10,9 +10,8 @@ export default {
   name: '404',
   data() {
     return {
+      title: '404 Not Found',
     };
-  },
-  methods: {
   },
 };
 </script>

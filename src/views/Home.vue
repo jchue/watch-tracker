@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <h1>Track Your Watch Activity</h1>
+    <h1>{{ title }}</h1>
     <p>Start by searching for a show or movie above.</p>
   </div>
 </template>
@@ -11,6 +11,7 @@ export default {
   name: 'Home',
   data() {
     return {
+      title: 'Track Your Watch Activity',
     };
   },
   methods: {

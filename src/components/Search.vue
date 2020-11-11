@@ -30,7 +30,8 @@
 <script>
 import axios from 'axios';
 
-const apiKey = process.env.VUE_APP_API_KEY;
+const contentBaseUrl = process.env.VUE_APP_CONTENT_API_BASE_URL;
+const contentKey = process.env.VUE_APP_CONTENT_API_KEY;
 
 export default {
   name: 'Search',
@@ -49,15 +50,16 @@ export default {
       };
 
       if (this.query) {
+        const url = `${contentBaseUrl}/search/multi`;
         const config = {
           params: {
-            api_key: apiKey,
+            api_key: contentKey,
             query: this.query,
           },
         };
 
         axios
-          .get('https://api.themoviedb.org/3/search/multi', config)
+          .get(url, config)
           .then((response) => {
             response.data.results.forEach((result) => {
               if (result.media_type === 'tv') {
@@ -77,11 +79,27 @@ export default {
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 .search {
   display: inline-block;
   position: relative;
+}
+
+input {
+  background-color: rgba(0, 0, 0, 0.07);
+  border: 3px solid rgba(0, 0, 0, 0);
+  border-radius: 4px;
+  color: #333;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1rem;
+  margin: 0 10px;
+  outline: none;
+  padding: 8px 10px;
+  transition: border 0.1s;
+
+  &:focus {
+    border: 3px solid rgba(0, 0, 0, 0.08);
+  }
 }
 
 .results {
@@ -124,22 +142,5 @@ export default {
   display: block;
   font-weight: bold;
   padding: 5px 20px;
-}
-
-input {
-  background-color: rgba(0, 0, 0, 0.07);
-  border: 3px solid rgba(0, 0, 0, 0);
-  border-radius: 4px;
-  color: #333;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 1rem;
-  margin: 0 10px;
-  outline: none;
-  padding: 8px 10px;
-  transition: border 0.1s;
-
-  &:focus {
-    border: 3px solid rgba(0, 0, 0, 0.08);
-  }
 }
 </style>

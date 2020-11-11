@@ -2,9 +2,15 @@
   <div class="show">
     <img v-bind:src="posterUrl" class="poster">
 
+    <!--
+      Header
+    -->
     <span class="media-type">TV Show</span>
     <h1>{{ title }}</h1>
 
+    <!--
+      Metadata
+    -->
     <section class="metadata">
       <section class="genres">
         <strong>Genre(s): </strong>
@@ -23,6 +29,9 @@
       </section>
     </section>
 
+    <!--
+      Details
+    -->
     <p>{{ overview }}</p>
 
     <section class="cast">
@@ -36,17 +45,23 @@
       </ul>
     </section>
 
+    <!--
+      Season list
+    -->
     <section class="seasons">
       <h2>Seasons</h2>
 
       <ul>
         <li v-for="season in seasons" v-bind:key="season.id">
-
           <h3 v-on:click="toggleSeason(season.season_number)" class="season-name">{{ season.name }}</h3>
 
+          <!-- Hidden until clicked -->
           <section v-bind:class="['season-details', { 'visible': season.visible }]">
             <p v-if="season.overview">{{ season.overview }}</p>
 
+            <!--
+              Episode list
+            -->
             <h4>Episodes</h4>
 
             <table class="episodes">
@@ -61,21 +76,37 @@
               </thead>
               <tbody>
                 <tr v-for="episode in season.episodes" v-bind:key="episode.id">
-                  <td class="watched-indicator"><indicator v-bind:watched="episode.watched" v-on:click="toggleWatchedStatus(episode)"></indicator></td>
-                  <td class="episode-number" v-on:click="showEpisodeDetails(episode)">{{ episode.episode_number }}</td>
-                  <td class="title" v-on:click="showEpisodeDetails(episode)">{{ episode.name }}</td>
-                  <td class="air-date" v-on:click="showEpisodeDetails(episode)">{{ episode.air_date }}</td>
+                  <td class="watched-indicator">
+                    <indicator v-bind:watched="episode.watched" v-on:click="toggleWatchedStatus(episode)"></indicator>
+                  </td>
+                  <td class="episode-number" v-on:click="showEpisodeDetails(episode)">
+                    {{ episode.episode_number }}
+                  </td>
+                  <td class="title" v-on:click="showEpisodeDetails(episode)">
+                    {{ episode.name }}
+                  </td>
+                  <td class="air-date" v-on:click="showEpisodeDetails(episode)">
+                    {{ episode.air_date }}
+                  </td>
+
+                  <!-- Hidden until clicked -->
                   <td class="hidden">
                     <transition name="fade">
                       <div class="episode-details" v-show="episode.detailsVisible">
                         <div class="scrim" v-on:click="hideEpisodeDetails(episode)"></div>
                         <div class="overlay">
                           <img v-bind:src="episode.stillUrl" class="episode-still">
+
                           <header>
                             <h4 class="episode-title">Episode {{ episode.episode_number }}: {{ episode.name }}</h4>
                             <span class="episode-air-date">{{ episode.air_date }}</span>
                           </header>
-                          <span class="episode-score"><strong>Score:</strong> {{ episode.vote_count ? episode.vote_average + '/10' : 'N/A' }}</span>
+
+                          <!-- Only show vote score if there are votes -->
+                          <span class="episode-score">
+                            <strong>Score:</strong> {{ episode.vote_count ? episode.vote_average + '/10' : 'N/A' }}
+                          </span>
+
                           <p class="episode-overview">{{ episode.overview }}</p>
                         </div>
                       </div>
@@ -96,14 +127,10 @@ import axios from 'axios';
 import { DateTime } from 'luxon';
 import Indicator from '@/components/WatchedIndicator.vue';
 
-const apiKey = process.env.VUE_APP_API_KEY;
+const contentBaseUrl = process.env.VUE_APP_CONTENT_API_BASE_URL;
+const contentKey = process.env.VUE_APP_CONTENT_API_KEY;
 const imgBaseUrl = process.env.VUE_APP_IMG_BASE_URL;
-
-const config = {
-  params: {
-    api_key: apiKey,
-  },
-};
+const trackingBaseUrl = process.env.VUE_APP_TRACKING_API_BASE_URL;
 
 export default {
   name: 'Show',
@@ -124,8 +151,15 @@ export default {
     };
   },
   mounted() {
+    let url = `${contentBaseUrl}/tv/${this.id}`;
+    const config = {
+      params: {
+        api_key: contentKey,
+      },
+    };
+
     axios
-      .get(`https://api.themoviedb.org/3/tv/${this.id}`, config)
+      .get(url, config)
       .then((response) => {
         this.genres = response.data.genres;
         this.title = response.data.name;
@@ -136,14 +170,17 @@ export default {
         this.website = response.data.homepage;
       });
 
+    url = `${contentBaseUrl}/tv/${this.id}/credits`;
+
     axios
-      .get(`https://api.themoviedb.org/3/tv/${this.id}/credits`, config)
+      .get(url, config)
       .then((response) => {
         this.cast = response.data.cast;
 
         this.cast.forEach((member) => {
+          url = `${contentBaseUrl}/person/${member.id}`;
           axios
-            .get(`https://api.themoviedb.org/3/person/${member.id}`, config)
+            .get(url, config)
             .then((response2) => {
               if (response2.data.profile_path) {
                 member.photo = `${imgBaseUrl}w45${response2.data.profile_path}`;
@@ -176,8 +213,15 @@ export default {
         // Find array index
         const seasonIndex = this.seasons.findIndex((season) => season.season_number === seasonNumber);
 
+        const url = `${contentBaseUrl}/tv/${this.id}/season/${seasonNumber}`;
+        const config = {
+          params: {
+            api_key: contentKey,
+          },
+        };
+
         axios
-          .get(`https://api.themoviedb.org/3/tv/${this.id}/season/${seasonNumber}`, config)
+          .get(url, config)
           .then((response) => {
             this.seasons[seasonIndex] = response.data;
 
@@ -193,8 +237,10 @@ export default {
     },
     getWatchedStatus(id) {
       const promise = new Promise((resolve) => {
+        const url = `${trackingBaseUrl}/records/${id}`;
+
         axios
-          .get(`http://localhost:3000/records/${id}`)
+          .get(url)
           .then((response) => {
             resolve(response.data.watched);
           })
@@ -207,20 +253,22 @@ export default {
     },
     toggleWatchedStatus(episode) {
       const promise = new Promise((resolve) => {
+        const url = `${trackingBaseUrl}/records/${episode.id}`;
+
         if (!episode.watched) {
           const body = {
             mediaType: 'tv',
           };
 
           axios
-            .post(`http://localhost:3000/records/${episode.id}`, body)
+            .post(url, body)
             .then(() => {
               episode.watched = true;
               resolve();
             });
         } else {
           axios
-            .delete(`http://localhost:3000/records/${episode.id}`)
+            .delete(url)
             .then(() => {
               episode.watched = false;
               resolve();

@@ -41,14 +41,9 @@
 <script>
 import axios from 'axios';
 
-const apiKey = process.env.VUE_APP_API_KEY;
+const contentBaseUrl = process.env.VUE_APP_CONTENT_API_BASE_URL;
+const contentKey = process.env.VUE_APP_CONTENT_API_KEY;
 const imgBaseUrl = process.env.VUE_APP_IMG_BASE_URL;
-
-const config = {
-  params: {
-    api_key: apiKey,
-  },
-};
 
 export default {
   name: 'Movie',
@@ -65,8 +60,15 @@ export default {
     };
   },
   mounted() {
+    let url = `${contentBaseUrl}/movie/${this.id}`;
+    const config = {
+      params: {
+        api_key: contentKey,
+      },
+    };
+
     axios
-      .get(`https://api.themoviedb.org/3/movie/${this.id}`, config)
+      .get(url, config)
       .then((response) => {
         this.genres = response.data.genres;
         this.title = response.data.title;
@@ -77,14 +79,18 @@ export default {
         this.website = response.data.homepage;
       });
 
+    url = `${contentBaseUrl}/movie/${this.id}/credits`;
+
     axios
-      .get(`https://api.themoviedb.org/3/movie/${this.id}/credits`, config)
+      .get(url, config)
       .then((response) => {
         this.cast = response.data.cast;
 
         this.cast.forEach((member) => {
+          url = `${contentBaseUrl}/person/${member.id}`;
+
           axios
-            .get(`https://api.themoviedb.org/3/person/${member.id}`, config)
+            .get(url, config)
             .then((response2) => {
               if (response2.data.profile_path) {
                 member.photo = `${imgBaseUrl}w45${response2.data.profile_path}`;
