@@ -1,7 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import bodyParser from 'body-parser';
 import sqlite3 from 'sqlite3';
 
 const app = express();
@@ -15,7 +14,7 @@ const db = new sqlite3.Database(process.env.SQLITE_DB_FILE, (error) => {
 });
 
 app.use(cors());
-app.use(bodyParser.json());
+app.use(express.json());
 
 app.get('/records/:externalId', (req, res) => {
   const query = 'SELECT * from tracked WHERE external_id = $externalId';
