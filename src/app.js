@@ -16,7 +16,6 @@ const db = new sqlite3.Database(process.env.SQLITE_DB_FILE, (error) => {
 
 app.use(cors());
 app.use(bodyParser.json());
-app.listen(3000, () => console.log('Server listening on port 3000'));
 
 app.get('/records/:externalId', (req, res) => {
   const query = 'SELECT * from tracked WHERE external_id = $externalId';
@@ -81,3 +80,5 @@ app.delete('/records/:externalId', (req, res) => {
 });
 
 // db.close();
+
+module.exports = app;
