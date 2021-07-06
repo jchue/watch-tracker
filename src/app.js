@@ -1,22 +1,17 @@
-import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import sqlite3 from 'sqlite3';
+import DB from './db';
+
+const debug = require('debug')('api:server');
 
 const app = express();
-
-const db = new sqlite3.Database(process.env.SQLITE_DB_FILE, (error) => {
-  if (error) {
-    console.log(error.message);
-  } else {
-    console.log('Connected to the database.');
-  }
-});
 
 app.use(cors());
 app.use(express.json());
 
-app.get('/records/:externalId', (req, res) => {
+app.get('/records/:externalId', async (req, res) => {
+  const db = new DB();
+
   const query = 'SELECT * from tracked WHERE external_id = $externalId';
   const params = {
     $externalId: req.params.externalId,
@@ -24,7 +19,7 @@ app.get('/records/:externalId', (req, res) => {
 
   db.get(query, params, (err, row) => {
     if (err) {
-      console.error(err.message);
+      debug(err.message);
     }
 
     if (row) {
@@ -33,17 +28,23 @@ app.get('/records/:externalId', (req, res) => {
       response.watched = row.watched === 1; // Convert to boolean
       response.watched_date = new Date(row.watched_date * 1000); // Convert to date
 
+      debug(`GET /records/${req.params.externalId}`);
+
       res.send(response);
     } else {
       res.sendStatus(404);
     }
   });
+
+  db.close();
 });
 
 app.post('/records/:externalId', (req, res) => {
   if (!req.body.mediaType) {
     res.status(400).send('mediaType required');
   } else {
+    const db = new DB();
+
     const query = 'INSERT OR REPLACE INTO tracked (created, media_type, external_id, watched, watched_date) values ($created, $mediaType, $externalId, $watched, $watchedDate)';
     const params = {
       $created: Math.floor(Date.now() / 1000),
@@ -55,11 +56,15 @@ app.post('/records/:externalId', (req, res) => {
 
     db.run(query, params, (err) => {
       if (err) {
-        console.error(err.message);
+        debug(err.message);
       }
+
+      debug(`POST /records/${req.params.externalId}`);
 
       res.sendStatus(201);
     });
+
+    db.close();
   }
 });
 
@@ -69,15 +74,19 @@ app.delete('/records/:externalId', (req, res) => {
     $externalId: req.params.externalId,
   };
 
+  const db = new DB();
+
   db.run(query, params, (err) => {
     if (err) {
-      console.error(err.message);
+      debug(err.message);
     }
+
+    debug(`DELETE /records/${req.params.externalId}`);
 
     res.sendStatus(204);
   });
-});
 
-// db.close();
+  db.close();
+});
 
 module.exports = app;
