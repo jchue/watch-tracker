@@ -9,24 +9,24 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
-    "core-js": "^3.12.1",
+    "core-js": "^3.15.2",
     "luxon": "^1.27.0",
-    "vue": "^3.0.11",
-    "vue-router": "^4.0.8"
+    "vue": "^3.1.4",
+    "vue-router": "^4.0.10"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.5.13",
     "@vue/cli-plugin-eslint": "^4.5.13",
     "@vue/cli-plugin-router": "^4.5.13",
     "@vue/cli-service": "^4.5.13",
-    "@vue/compiler-sfc": "^3.0.11",
+    "@vue/compiler-sfc": "^3.1.4",
     "@vue/eslint-config-airbnb": "^5.3.0",
     "babel-eslint": "^10.1.0",
     "eslint": "^6.7.2",
-    "eslint-plugin-import": "^2.23.3",
-    "eslint-plugin-vue": "^7.9.0",
+    "eslint-plugin-import": "^2.23.4",
+    "eslint-plugin-vue": "^7.13.0",
     "postcss-normalize": "^9.0.0",
-    "sass": "^1.34.0",
+    "sass": "^1.35.1",
     "sass-loader": "^8.0.2"
   }
 }
