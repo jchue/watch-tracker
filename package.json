@@ -1,0 +1,22 @@
+{
+  "name": "watch-tracker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "frontend": "cd client && npm run serve",
+    "backend": "cd api && npm run dev",
+    "dev": "npm run backend & npm run frontend"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jchue/watch-tracker.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jchue/watch-tracker/issues"
+  },
+  "homepage": "https://github.com/jchue/watch-tracker#readme",
+  "dependencies": {}
+}
