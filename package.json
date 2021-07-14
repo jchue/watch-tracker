@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "frontend": "cd client && npm run serve",
+    "frontend": "cd react-client && npm run start",
     "backend": "cd api && npm run dev",
     "dev": "npm run backend & npm run frontend"
   },
