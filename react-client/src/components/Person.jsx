@@ -4,9 +4,9 @@ import axios from 'axios';
 class Person extends React.Component {
   render() {
     const imgBaseUrl = process.env.REACT_APP_IMG_BASE_URL;
-    const photo = this.props.photo ? `${imgBaseUrl}w45${this.props.photo}` : null;
+    const photo = this.props.photo ? `${imgBaseUrl}w185${this.props.photo}` : null;
     const firstNameInitial = this.props.name[0];
-    const lastNameInitial = this.props.name.split(' ')[1][0];
+    const lastNameInitial = this.props.name.split(' ')[1] ? this.props.name.split(' ')[1][0] : '';
     
 
     return (
