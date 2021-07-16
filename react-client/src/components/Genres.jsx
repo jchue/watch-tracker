@@ -1,16 +1,20 @@
 import React from 'react';
-import './Genres.scss';
 
 class Genres extends React.Component {
   render() {
-    const listItems = this.props.genres.map((genre) =>
-      <li key={genre.id}>{genre.name}</li>
+    const listItems = this.props.genres.map((genre, index) =>
+        <li key={genre.id} className="inline">{genre.name}
+          {/* Display comma after all except last */}
+          {index !== (this.props.genres.length - 1) &&
+            <span>, </span>
+          }
+      </li>
     );
 
     return (
-      <section className="genres">
+      <section>
         <strong>Genre(s): </strong>
-        <ul>
+        <ul className="inline">
           {listItems}
         </ul>
       </section>

@@ -27,26 +27,26 @@ class Season extends React.Component{
 
   render() {
     return (
-      <li className="season">
-        <h3 className="season-name" onClick={this.toggleSeason}>{this.props.name}</h3>
+      <li className="rounded-lg bg-white mb-2">
+        <h3 className="text-lg m-0 px-6 py-4 cursor-pointer font-semibold" onClick={this.toggleSeason}>{this.props.name}</h3>
 
         {/* Hidden until clicked */}
-        <section className={'season-details' + (this.state.visible ? ' visible' : '')}>
+        <section className={'season-details border-t border-gray-200 px-6' + (this.state.visible ? ' visible' : '')}>
           <p v-if="season.overview">{this.props.overview}</p>
 
           {/*
             Episode list
           */}
-          <h4>Episodes</h4>
+          <h4 className="font-bold">Episodes</h4>
 
-          <table className="episodes">
-            <thead>
-              <tr>
-                <th className="watched-indicator">Viewed</th>
-                <th className="episode-number">#</th>
-                <th className="title">Title</th>
-                <th className="air-date">Air Date</th>
-                <th className="hidden"></th>
+          <table className="w-full">
+            <thead className="uppercase text-gray-500 text-xs">
+              <tr className="bg-gray-100 border-t border-b">
+                <th className="p-2 text-center w-1">Viewed</th>
+                <th className="p-2 text-right w-1">#</th>
+                <th className="p-2">Title</th>
+                <th className="p-2">Air Date</th>
+                <th className="w-0"></th>
               </tr>
             </thead>
             <tbody>

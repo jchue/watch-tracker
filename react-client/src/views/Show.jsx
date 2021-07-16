@@ -1,9 +1,9 @@
 import React from 'react';
 import axios from 'axios';
-import './Show.scss';
 import Genres from '../components/Genres';
 import Credits from '../components/Credits';
 import Seasons from '../components/Seasons';
+import { ExternalLinkIcon } from '@heroicons/react/solid';
 
 class Show extends React.Component {
   constructor(props) {
@@ -32,27 +32,27 @@ class Show extends React.Component {
 
   render() {
     return (
-      <div className="show">
-        <img src={this.state.posterUrl} alt={`${this.state.title} Poster`} className="poster" />
+      <div>
+        <img src={this.state.posterUrl} alt={`${this.state.title} Poster`} className="bg-white float-right ml-6 p-2" />
 
-        <span className="media-type">TV Show</span>
-        <h1>{this.state.title}</h1>
+        <span className="inline-block bg-yellow-200 text-yellow-900 text-xs mb-4 px-2 py-1 rounded-full uppercase font-bold">TV Show</span>
+        <h1 className="font-bold text-4xl mb-4">{this.state.title}</h1>
 
-        <section className="metadata">
+        <section className="text-sm mb-4">
           <Genres genres={this.state.genres} />
 
-          <section className="score">
+          <section>
             <strong>Rating:</strong> {this.state.score}/10
           </section>
 
-          <section className="website">
-            <a href={this.state.website}>Website</a>
+          <section>
+            <a href={this.state.website} className="font-bold inline-block bg-gray-500 my-2 px-3 py-1.5 rounded text-white text-xs">Website <ExternalLinkIcon className="inline h-5 w-5 -mt-1" /></a>
           </section>
         </section>
 
         <p>{this.state.overview}</p>
 
-        <Credits mediaId={this.props.match.params.id} mediaType="show" creditType="cast" />
+        <Credits mediaId={this.props.match.params.id} mediaType="show" creditType="cast" className="mb-8" />
 
         <Seasons showId={this.props.match.params.id} seasons={this.state.seasons} />
       </div>

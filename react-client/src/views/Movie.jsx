@@ -1,8 +1,8 @@
 import React from 'react';
 import axios from 'axios';
-import './Movie.scss';
 import Genres from '../components/Genres';
 import Credits from '../components/Credits';
+import { ExternalLinkIcon } from '@heroicons/react/solid';
 
 class Movie extends React.Component {
   constructor(props) {
@@ -30,21 +30,21 @@ class Movie extends React.Component {
 
   render() {
     return (
-      <div className="movie">
-        <img src={this.state.posterUrl} alt={`${this.state.title} Poster`} className="poster" />
+      <div>
+        <img src={this.state.posterUrl} alt={`${this.state.title} Poster`} className="bg-white float-right ml-6 p-2" />
 
-        <span className="media-type">Movie</span>
-        <h1>{this.state.title}</h1>
+        <span className="inline-block bg-purple-200 text-purple-900 text-xs mb-4 px-2 py-1 rounded-full uppercase font-bold">Movie</span>
+        <h1 className="font-bold text-4xl mb-4">{this.state.title}</h1>
 
-        <section className="metadata">
+        <section className="text-sm mb-4">
           <Genres genres={this.state.genres} />
 
-          <section className="score">
+          <section>
             <strong>Rating:</strong> {this.state.score}/10
           </section>
 
-          <section className="website">
-            <a href={this.state.website}>Website</a>
+          <section>
+            <a href={this.state.website} className="font-bold inline-block bg-gray-500 my-2 px-3 py-1.5 rounded text-white text-xs">Website <ExternalLinkIcon className="inline h-5 w-5 -mt-1" /></a>
           </section>
         </section>
 

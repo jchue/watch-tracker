@@ -1,12 +1,11 @@
 import React from 'react';
 import Season from './Season';
-import './Seasons.scss';
 
 class Seasons extends React.Component {
   render() {
     return(
       <section className="seasons">
-          <h2>Seasons</h2>
+          <h2 className="font-bold text-2xl">Seasons</h2>
 
           <ul>
             {this.props.seasons.map((season) =>

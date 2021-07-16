@@ -1,7 +1,6 @@
 import React from 'react';
 import axios from 'axios';
 import Person from './Person';
-import './Credits.scss';
 
 class Credits extends React.Component {
   constructor(props) {
@@ -36,13 +35,13 @@ class Credits extends React.Component {
     }
 
     return (
-      <section className="credits">
-        <h2>{title}</h2>
+      <section className={this.props.className}>
+        <h2 className="font-bold text-2xl">{title}</h2>
 
         <ul>
           {members.map((member, index) =>
-            <li key={member.id}>
-              <Person id={member.id} />
+            <li key={member.id} className="inline-block m-1">
+              <Person name={member.name} photo={member.profile_path} role={member.character || member.job} />
             </li>
           )}
         </ul>

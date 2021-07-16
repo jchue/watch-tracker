@@ -1,6 +1,5 @@
 import React from 'react';
 import axios from 'axios';
-import './Indicator.scss';
 
 class Indicator extends React.Component {
   constructor(props) {
@@ -19,9 +18,7 @@ class Indicator extends React.Component {
 
   render() {
     return (
-      <div className={'indicator' + (this.state.watched ? ' watched' : '')} onClick={this.toggleWatchedStatus}>
-        <span>✓</span>
-      </div>
+      <input type="checkbox" checked={this.state.watched ? 'checked' : ''} onClick={this.toggleWatchedStatus.bind(this, this.props.id)} className="h-6 w-6 border-2 border-gray-300 rounded cursor-pointer text-purple-800 focus:ring-purple-800 hover:text-purple-500" />
     );
   }
 

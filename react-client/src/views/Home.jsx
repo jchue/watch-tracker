@@ -1,13 +1,12 @@
 import React from 'react';
-import './Home.scss';
 
 class Home extends React.Component {
   render() {
     return (
-      <div className="home">
-        <h1>Track Your Watch Activity</h1>
+      <div className="mt-20">
+        <span className="text-6xl tracking-tight font-extrabold text-gray-800">Track Your Watch Activity</span>
 
-        <p>Start by searching for a show or movie above.</p>
+        <p className="text-lg text-gray-500">Start by searching for a show or movie above.</p>
       </div>
     );
   }

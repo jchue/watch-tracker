@@ -6,7 +6,6 @@ import {
   useLocation,
 } from 'react-router-dom';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
-import './App.scss';
 import Search from './components/Search';
 import Home from './views/Home';
 import Movie from './views/Movie';
@@ -17,7 +16,7 @@ function Content() {
   const location = useLocation();
 
   return (
-    <div className="wrapper">
+    <div className="max-w-5xl mx-auto">
       <SwitchTransition>
         <CSSTransition classNames="fade" timeout={100} key={location.key} unmountOnExit appear>
 
@@ -38,13 +37,13 @@ function App() {
   return (
     <Router>
       <div className="App">
-        <header id="site-header">
-          <div className="wrapper">
-            <Link to="/" id="site-title">Watch Tracker</Link>
+        <header className="bg-white py-4 shadow-sm">
+          <div className="max-w-5xl mx-auto">
+            <Link to="/" className="font-bold mr-8">Watch Tracker</Link>
             <Search />
           </div>
         </header>
-        <main id="site-content">
+        <main className="pt-16">
           <Content />
         </main>
       </div>

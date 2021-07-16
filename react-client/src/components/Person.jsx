@@ -1,32 +1,24 @@
 import React from 'react';
 import axios from 'axios';
-import './Person.scss';
 
 class Person extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      name: '',
-      photo: '',
-    };
-  }
-
-  componentDidMount() {
-    this.loadPerson(this.props.id);
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    if (this.props.id !== prevProps.id) {
-      this.loadPerson(this.props.id);
-    }
-  }
-
   render() {
+    const imgBaseUrl = process.env.REACT_APP_IMG_BASE_URL;
+    const photo = this.props.photo ? `${imgBaseUrl}w45${this.props.photo}` : null;
+    const firstNameInitial = this.props.name[0];
+    const lastNameInitial = this.props.name.split(' ')[1][0];
+    
+
     return (
-      <div className="person">
-        <div className="photo" style={{ backgroundImage: this.state.photo ? `url(${this.state.photo})` : 'none' }}></div>
-        {this.state.name}
+      <div className="bg-white rounded-full flex items-center p-2">
+        {photo
+        ? <div className="bg-center bg-cover bg-no-repeat rounded-full h-12 w-12 mr-3 flex items-center justify-center" style={{ backgroundImage: 'url(' + photo + ')'}}>&nbsp;</div>
+        : <div className="bg-gray-100 rounded-full h-12 w-12 mr-3 flex items-center justify-center"><span className="text-xl text-gray-400">{firstNameInitial}{lastNameInitial}</span></div>
+        }
+        <div className="w-40">
+          <span className="block text-xs font-bold">{this.props.name}</span>
+          <span className="block text-xs text-gray-500">{this.props.role}</span>
+        </div>
       </div>
     );
   }
