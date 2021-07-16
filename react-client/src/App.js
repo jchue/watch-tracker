@@ -16,7 +16,7 @@ function Content() {
   const location = useLocation();
 
   return (
-    <div className="max-w-5xl mx-auto">
+    <div className="max-w-5xl mx-auto h-full">
       <SwitchTransition>
         <CSSTransition classNames="fade" timeout={100} key={location.key} unmountOnExit appear>
 
@@ -36,16 +36,21 @@ function Content() {
 function App() {
   return (
     <Router>
-      <div className="App">
+      <div className="App h-full flex flex-col">
         <header className="bg-white py-4 shadow-sm">
           <div className="max-w-5xl mx-auto">
             <Link to="/" className="font-bold mr-8">Watch Tracker</Link>
             <Search />
           </div>
         </header>
-        <main className="pt-16">
+        <main className="pt-16 flex-grow">
           <Content />
         </main>
+        <footer className="bg-gray-600 mt-16 py-8 text-sm text-white">
+          <div className="max-w-5xl mx-auto text-center">
+            Watch Tracker
+          </div>
+        </footer>
       </div>
     </Router>
   );
