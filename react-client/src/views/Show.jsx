@@ -3,7 +3,7 @@ import axios from 'axios';
 import Genres from '../components/Genres';
 import Credits from '../components/Credits';
 import Seasons from '../components/Seasons';
-import { ExternalLinkIcon } from '@heroicons/react/solid';
+import { DesktopComputerIcon, ExternalLinkIcon } from '@heroicons/react/solid';
 
 class Show extends React.Component {
   constructor(props) {
@@ -21,19 +21,22 @@ class Show extends React.Component {
   }
 
   componentDidMount() {
-    this.loadShow(this.props.match.params.id);
+    this.loadShow(this.props.match.params.showId);
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (this.props.match.params.id !== prevProps.match.params.id) {
-      this.loadShow(this.props.match.params.id);
+    if (this.props.match.params.showId !== prevProps.match.params.showId) {
+      this.loadShow(this.props.match.params.showId);
     }
   }
 
   render() {
     return (
       <div>
-        <img src={this.state.posterUrl} alt={`${this.state.title} Poster`} className="bg-white float-right ml-6 p-2" />
+        {this.state.posterUrl
+        ? <img src={this.state.posterUrl} alt={`${this.state.title} Poster`} className="bg-white float-right ml-6 p-2" />
+        : <div className="bg-white float-right ml-6 p-2 w-80 h-80 align-middle relative"><DesktopComputerIcon  className="absolute text-gray-200 inset-1/4" /></div>
+        }
 
         <span className="inline-block bg-yellow-200 text-yellow-900 text-xs mb-4 px-2 py-1 rounded-full uppercase font-bold">TV Show</span>
         <h1 className="font-bold text-4xl mb-4">{this.state.title}</h1>
@@ -52,9 +55,9 @@ class Show extends React.Component {
 
         <p>{this.state.overview}</p>
 
-        <Credits mediaId={this.props.match.params.id} mediaType="show" creditType="cast" className="mb-8" />
+        <Credits mediaId={this.props.match.params.showId} mediaType="show" creditType="cast" className="mb-8" />
 
-        <Seasons showId={this.props.match.params.id} seasons={this.state.seasons} />
+        <Seasons showId={this.props.match.params.showId} seasons={this.state.seasons} />
       </div>
     );
   }
@@ -80,7 +83,7 @@ class Show extends React.Component {
         overview: response.data.overview,
         score: response.data.vote_average,
         seasons: response.data.seasons,
-        posterUrl: `${imgBaseUrl}w300${response.data.poster_path}`,
+        posterUrl: response.data.poster_path ? `${imgBaseUrl}w300${response.data.poster_path}` : null,
         website: response.data.homepage,
       });
     });

@@ -2,7 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import Genres from '../components/Genres';
 import Credits from '../components/Credits';
-import { ExternalLinkIcon } from '@heroicons/react/solid';
+import { DesktopComputerIcon, ExternalLinkIcon } from '@heroicons/react/solid';
 
 class Movie extends React.Component {
   constructor(props) {
@@ -31,7 +31,10 @@ class Movie extends React.Component {
   render() {
     return (
       <div>
-        <img src={this.state.posterUrl} alt={`${this.state.title} Poster`} className="bg-white float-right ml-6 p-2" />
+        {this.state.posterUrl
+        ? <img src={this.state.posterUrl} alt={`${this.state.title} Poster`} className="bg-white float-right ml-6 p-2" />
+        : <div className="bg-white float-right ml-6 p-2 w-80 h-80 align-middle relative"><DesktopComputerIcon  className="absolute text-gray-200 inset-1/4" /></div>
+        }
 
         <span className="inline-block bg-purple-200 text-purple-900 text-xs mb-4 px-2 py-1 rounded-full uppercase font-bold">Movie</span>
         <h1 className="font-bold text-4xl mb-4">{this.state.title}</h1>
@@ -75,7 +78,7 @@ class Movie extends React.Component {
         title: response.data.title,
         overview: response.data.overview,
         score: response.data.vote_average,
-        posterUrl: `${imgBaseUrl}w300${response.data.poster_path}`,
+        posterUrl: response.data.poster_path ? `${imgBaseUrl}w300${response.data.poster_path}` : null,
         website: response.data.homepage,
       });
     });
