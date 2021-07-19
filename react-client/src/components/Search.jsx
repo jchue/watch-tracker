@@ -74,7 +74,7 @@ class Search extends React.Component {
 
           {/* Only display if there are results */
           (this.state.numberOfResults > 0) &&
-            <ul className="results bg-white p-4 rounded-lg shadow-lg">
+            <ul className="results bg-white p-4 rounded-lg shadow-lg z-10">
               <li><span className="block uppercase text-gray-400 text-xs font-bold px-3 py-2"><DesktopComputerIcon className="inline h-5 w-5 mr-1" /> TV Shows</span>
                 <ul>
                   {this.state.shows.map((show) =>
@@ -106,7 +106,7 @@ class Search extends React.Component {
 
 function SearchResult(props) {
   return (
-    <li><Link to={ `/${props.mediaType}/${props.mediaId}` } className="block rounded px-3 py-1.5 text-gray-700 text-sm hover:bg-gray-100">{props.name || props.title}</Link></li>
+    <li><Link to={ `/${props.mediaType}/${props.mediaId}` } className="block rounded px-3 py-1.5 text-gray-700 text-sm hover:bg-gray-100 transition-colors duration-200">{props.name || props.title}</Link></li>
   );
 }
 

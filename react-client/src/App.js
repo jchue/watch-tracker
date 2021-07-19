@@ -10,6 +10,7 @@ import Search from './components/Search';
 import Home from './views/Home';
 import Movie from './views/Movie';
 import Show from './views/Show';
+import Season from './views/Season';
 import NotFound from './views/404';
 
 function Content() {
@@ -23,7 +24,8 @@ function Content() {
           <Switch location={location}>
             <Route exact path="/" component={Home} />
             <Route exact path="/movies/:id" component={Movie} />
-            <Route exact path="/shows/:id" component={Show} />
+            <Route exact path="/shows/:showId" component={Show} />
+            <Route exact path="/shows/:showId/:seasonNumber" component={Season} />
             <Route path="*" component={NotFound} />
           </Switch>
 
