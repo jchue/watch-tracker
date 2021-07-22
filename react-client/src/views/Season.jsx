@@ -49,7 +49,7 @@ class Season extends React.Component{
           <div>
             <span className="inline-block bg-yellow-200 text-yellow-900 text-xs mb-4 px-2 py-1 rounded-full uppercase font-bold">TV Show</span>
             <Link to={`/shows/${this.props.match.params.showId}`} className="block text-gray-500"><ArrowCircleLeftIcon className="inline h-5 w-5 -mt-0.5 mr-1" />{this.state.showName}</Link>
-            <h1 className="font-bold text-4xl mb-4" onClick={this.toggleSeason}>{this.state.name} {aired && ({aired}) }</h1>
+            <h1 className="font-bold text-4xl mb-4" onClick={this.toggleSeason}>{this.state.name} {aired && `(${aired})` }</h1>
             <p v-if="season.overview">{this.state.overview}</p>
           </div>
         </section>

@@ -17,7 +17,7 @@ class SeasonTile extends React.Component {
         }
 
         <h3 className="font-bold text-center mt-3 mb-0">{this.props.name}</h3>
-        <span className="block text-center mb-3 text-gray-500 text-sm">{aired && ({aired}) }</span>
+        <span className="block text-center mb-3 text-gray-500 text-sm">{aired && `(${aired})` }</span>
       </Link>
     );
   }
