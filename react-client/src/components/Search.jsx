@@ -24,41 +24,18 @@ class Search extends React.Component {
     }), () => {
       /* Only if the query is not empty */
       if (this.state.query.length !== 0) {
-        const contentBaseUrl = process.env.REACT_APP_CONTENT_API_BASE_URL;
-        const contentKey = process.env.REACT_APP_CONTENT_API_KEY;
+        const contentBaseUrl = process.env.REACT_APP_SERVICE_BASE_URL;
 
-        const url = `${contentBaseUrl}/search/multi`;
-        const config = {
-          params: {
-            api_key: contentKey,
-            query: this.state.query,
-          },
-        };
+        const url = `${contentBaseUrl}/search/${this.state.query}`;
 
         axios
-        .get(url, config)
+        .get(url)
         .then((response) => {
-          const results = {
-            movies: [],
-            people: [],
-            shows: [],
-          };
-
-          response.data.results.forEach((result) => {
-            if (result.media_type === 'tv') {
-              results.shows.push(result);
-            } else if (result.media_type === 'movie') {
-              results.movies.push(result);
-            } else if (result.media_type === 'person') {
-              results.people.push(result);
-            }
-          });
-
           this.setState({
-            shows: results.shows,
-            movies: results.movies,
-            people: results.people,
-            numberOfResults: results.shows.length + results.movies.length + results.people.length,
+            shows: response.data.data.shows,
+            movies: response.data.data.movies,
+            people: response.data.data.people,
+            numberOfResults: response.data.data.shows.length + response.data.data.movies.length + response.data.data.people.length,
           });
         });
       }
