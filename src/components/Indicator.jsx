@@ -13,24 +13,30 @@ class Indicator extends React.Component {
   }
 
   componentDidMount() {
-    this.getWatchedStatus(this.props.id);
+    this.getWatchedStatus(this.props.id, this.props.mediaType);
   }
 
   render() {
     return (
-      <input type="checkbox" checked={this.state.watched ? 'checked' : ''} onChange={this.toggleWatchedStatus.bind(this, this.props.id)} className="h-6 w-6 border-2 border-gray-300 rounded cursor-pointer text-purple-800 focus:ring-purple-800 hover:text-purple-500" />
+      <input type="checkbox" checked={this.state.watched ? 'checked' : ''} onChange={this.toggleWatchedStatus.bind(this, this.props.id, this.props.mediaType)} className="h-6 w-6 border-2 border-gray-300 rounded cursor-pointer text-purple-800 focus:ring-purple-800 hover:text-purple-500" />
     );
   }
 
-  getWatchedStatus(id) {
+  getWatchedStatus(id, mediaTypeParam) {
     const trackingBaseUrl = process.env.REACT_APP_TRACKING_API_BASE_URL;
-    const url = `${trackingBaseUrl}/records/${id}`;
+
+    let mediaType = 'show';
+    if (mediaTypeParam === 'movie') {
+      mediaType = 'movie';
+    }
+
+    const url = `${trackingBaseUrl}/records/${mediaType}/${id}`;
 
     axios
     .get(url)
     .then((response) => {
       this.setState({
-        watched: response.data.watched,
+        watched: response.data.data.watched,
       });
     })
     .catch(() => {
@@ -40,17 +46,19 @@ class Indicator extends React.Component {
     });
   }
 
-  toggleWatchedStatus(id) {
+  toggleWatchedStatus(id, mediaTypeParam) {
     const trackingBaseUrl = process.env.REACT_APP_TRACKING_API_BASE_URL;
-    const url = `${trackingBaseUrl}/records/${id}`;
+
+    let mediaType = 'show';
+    if (mediaTypeParam === 'movie') {
+      mediaType = 'movie';
+    }
+
+    const url = `${trackingBaseUrl}/records/${mediaType}/${id}`;
 
     if (!this.state.watched) {
-      const body = {
-        mediaType: 'tv',
-      };
-
       axios
-      .post(url, body)
+      .post(url)
       .then(() => {
         this.setState({
           watched: true,

@@ -32,7 +32,7 @@ class Episode extends React.Component {
         {/* Initial table row */}
         <tr className="border-t text-sm border-gray-200 cursor-pointer hover:bg-gray-100 transition-colors duration-200">
           <td className="p-3 pl-8 text-center">
-            <Indicator id={this.props.mediaId} />
+            <Indicator id={this.props.mediaId} mediaType="show" />
           </td>
 
           <td className={'p-3 text-right transition-all duration-200' + (this.state.visible ? ' font-bold text-lg' : '')} onClick={this.toggleEpisodeDetails}>
