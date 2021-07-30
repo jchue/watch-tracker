@@ -3,8 +3,6 @@ import cors from 'cors';
 import searchRouter from './routes/search';
 import recordsRouter from './routes/records';
 
-const debug = require('debug')('api:server');
-
 const app = express();
 
 app.use(cors());
@@ -14,17 +12,7 @@ app.use('/search', searchRouter);
 app.use('/records', recordsRouter);
 
 /* Standardize response structure */
-app.use((req, res, next) => {
-  if (!res.data) {
-    const error = {
-      statusCode: 404,
-      detail: `Requested resource at ${req.originalUrl} not found`,
-    };
-
-    debug(error);
-    return next(error); // Pass error to next middleware
-  }
-
+app.use((req, res) => {
   res.statusCode = res.statusCode || 200;
   res.body = {
     data: res.data,
