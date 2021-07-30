@@ -1,9 +1,14 @@
 import express from 'express';
 import axios from 'axios';
+import HTTPError from '../error';
+
+const debug = require('debug')('api:server');
 
 const router = express.Router();
 
 router.get(['/', '/:query'], async (req, res, next) => {
+  debug(`${req.method} ${req.originalUrl}`);
+
   const baseUrl = process.env.BACKEND_BASE_URL;
   const key = process.env.BACKEND_API_KEY;
   const { query } = req.params;
@@ -13,7 +18,7 @@ router.get(['/', '/:query'], async (req, res, next) => {
     shows: [],
   };
 
-  /* If empty query, skip directly to empty response */
+  // If empty query, skip directly to empty response
   if (query) {
     const url = `${baseUrl}/search/multi`;
     const config = {
@@ -35,12 +40,18 @@ router.get(['/', '/:query'], async (req, res, next) => {
         }
       });
     } catch (error) {
-      next(error);
+      // Output error to log
+      debug(error.message);
+
+      // Return generic server error
+      return next(new HTTPError(500));
     }
   }
 
   res.data = results;
-  next();
+  debug(`Movies: ${results.movies.length}, People: ${results.people.length}, Shows: ${results.shows.length}`);
+
+  return next();
 });
 
 export default router;
