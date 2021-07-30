@@ -53,6 +53,7 @@ router.get('/:mediaTypeParam/:externalId', (req, res, next) => {
       return next(new HTTPError(500));
     }
 
+    // Data found
     if (row) {
       // Convert values from SQLite
       const data = {
@@ -84,22 +85,20 @@ router.get('/:mediaTypeParam/:externalId', (req, res, next) => {
 router.post('/:mediaTypeParam/:externalId', (req, res, next) => {
   debug(`${req.method} ${req.originalUrl}`);
 
-  /**
-   * Initialize data
-   */
+  // Initialize data
   const mediaType = translateMediaType(req.params.mediaTypeParam);
-  const created = Date.now();
-  const { externalId } = req.params;
+  const created = new Date();
+  const externalId = Number(req.params.externalId);
   const watched = true;
-  const watchedDate = Date.now();
+  const watchedDate = new Date();
 
   // Convert values for SQLite and prepare bind parameters
   const params = {
-    $created: Math.floor(created / 1000),
+    $created: Math.floor(created.getTime() / 1000),
     $mediaType: mediaType,
     $externalId: req.params.externalId,
     $watched: 1,
-    $watchedDate: Math.floor(created / 1000),
+    $watchedDate: Math.floor(created.getTime() / 1000),
   };
   const query = 'INSERT OR REPLACE INTO tracked (created, media_type, external_id, watched, watched_date) values ($created, $mediaType, $externalId, $watched, $watchedDate)';
 
@@ -116,10 +115,10 @@ router.post('/:mediaTypeParam/:externalId', (req, res, next) => {
     // Return inserted data
     const data = {
       id: this.lastID,
-      created: new Date(created),
+      created,
       media_type: mediaType,
       external_id: externalId,
-      watched: new Date(watched),
+      watched,
       watched_date: watchedDate,
     };
     res.data = data;
@@ -156,9 +155,17 @@ router.delete('/:mediaTypeParam/:externalId', (req, res, next) => {
       return next(new HTTPError(500));
     }
 
-    // Output result ot log, but return idempotent 204 regardless
+    // Output result to log, but return idempotent 204 regardless
+    if (this.changes) {
+      const data = {
+        external_id: Number(req.params.externalId),
+        media_type: mediaType,
+      };
+      debug('Record deleted: %o', data);
+    } else {
+      debug(`No record of '${mediaType}' with external ID ${req.params.externalId} found`);
+    }
     res.statusCode = 204;
-    debug(this.changes ? `Record of '${mediaType}' with external ID ${req.params.externalId} deleted` : `No record of '${mediaType}' with external ID ${req.params.externalId} found`);
 
     db.close();
     return next();
