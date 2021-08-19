@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { DateTime } from 'luxon';
 import { ArrowCircleLeftIcon } from '@heroicons/react/outline';
 import { DesktopComputerIcon } from '@heroicons/react/solid';
+import MediaTypeBadge from '../components/MediaTypeBadge';
 import Episode from '../components/Episode';
 
 class Season extends React.Component{
@@ -47,9 +48,12 @@ class Season extends React.Component{
           }
 
           <div>
-            <span className="inline-block bg-yellow-200 text-yellow-900 text-xs mb-4 px-2 py-1 rounded-full uppercase font-bold">TV Show</span>
-            <Link to={`/shows/${this.props.match.params.showId}`} className="block text-gray-500"><ArrowCircleLeftIcon className="inline h-5 w-5 -mt-0.5 mr-1" />{this.state.showName}</Link>
-            <h1 className="font-bold text-4xl mb-4" onClick={this.toggleSeason}>{this.state.name} {aired && `(${aired})` }</h1>
+            <MediaTypeBadge mediaType="show" className="mb-2" />
+
+            <h1 className="font-bold text-5xl mb-2" onClick={this.toggleSeason}>{this.state.name} {aired && `(${aired})` }</h1>
+
+            <Link to={`/shows/${this.props.match.params.showId}`} className="block mb-4 text-xl text-indigo-500"><ArrowCircleLeftIcon className="inline h-5 w-5 -mt-0.5 mr-1" />{this.state.showName}</Link>
+
             <p v-if="season.overview">{this.state.overview}</p>
           </div>
         </section>
@@ -135,7 +139,7 @@ class Season extends React.Component{
 function Episodes(props) {
   return (
     props.episodes.map((episode) =>
-      <Episode number={episode.episode_number} name={episode.name} airDate={episode.air_date} stillPath={episode.still_path} voteCount={episode.vote_count} voteAverage={episode.vote_average} overview={episode.overview} mediaId={episode.id} key={episode.id} />
+      <Episode key={episode.id} number={episode.episode_number} name={episode.name} airDate={episode.air_date} stillPath={episode.still_path} voteCount={episode.vote_count} voteAverage={episode.vote_average} overview={episode.overview} mediaId={episode.id} />
     )
   );
 }

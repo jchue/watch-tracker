@@ -9,8 +9,9 @@ class Seasons extends React.Component {
 
           <ul className="grid grid-cols-4">
             {this.props.seasons.map((season) =>
-              <SeasonTile name={season.name} showId={this.props.showId} seasonNumber={season.season_number} poster={season.poster_path} airDate={season.air_date} />
-              /*<Season showId={this.props.showId} seasonNumber={season.season_number} name={season.name} overview={season.overview} key={season.id} />*/
+              <li key={season.id} className="mr-4 mb-4">
+                <SeasonTile name={season.name} showId={this.props.showId} seasonNumber={season.season_number} poster={season.poster_path} airDate={season.air_date} />
+              </li>
             )}
         </ul>
       </section>

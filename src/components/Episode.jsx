@@ -2,6 +2,7 @@ import React from 'react';
 import { DateTime } from 'luxon';
 import { DesktopComputerIcon } from '@heroicons/react/solid';
 import Indicator from './Indicator';
+import Score from './Score';
 
 class Episode extends React.Component {
   constructor(props) {
@@ -59,7 +60,7 @@ class Episode extends React.Component {
 
               {/* Only show vote score if there are votes */}
               <span className="block mb-4">
-                <strong>Score:</strong> {this.props.voteCount ? this.props.voteAverage + '/10' : 'N/A'}
+                {this.props.voteCount ? <Score score={this.props.voteAverage} /> : ''}
               </span>
 
               <p className="mb-0">{this.props.overview}</p>

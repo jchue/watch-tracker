@@ -45,7 +45,7 @@ class Search extends React.Component {
   render() {
     return (
       <form className="search relative inline">
-        <div className="inline-block bg-gray-100 border-0 rounded-md px-3 py-2 focus-within:ring-2 focus-within:ring-purple-500">
+        <div className="inline-block bg-gray-100 border-0 rounded-md px-3 py-2 focus-within:ring-2 focus-within:ring-indigo-500">
           <SearchIcon className="inline h-5 w-5 -mt-1 mr-2 text-gray-400" />
           <input type="text" value={this.state.query} placeholder="Search" onChange={this.performSearch} className="bg-gray-100 border-0 text-gray-500 focus:ring-0 m-0 p-0 outline-none" />
 

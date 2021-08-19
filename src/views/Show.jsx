@@ -3,7 +3,10 @@ import axios from 'axios';
 import Genres from '../components/Genres';
 import Credits from '../components/Credits';
 import Seasons from '../components/Seasons';
-import { DesktopComputerIcon, ExternalLinkIcon } from '@heroicons/react/solid';
+import MediaTypeBadge from '../components/MediaTypeBadge';
+import ExternalLink from '../components/ExternalLink';
+import Score from '../components/Score';
+import { DesktopComputerIcon } from '@heroicons/react/solid';
 
 class Show extends React.Component {
   constructor(props) {
@@ -35,22 +38,20 @@ class Show extends React.Component {
       <div>
         {this.state.posterUrl
         ? <img src={this.state.posterUrl} alt={`${this.state.title} Poster`} className="bg-white float-right ml-6 p-2" />
-        : <div className="bg-white float-right ml-6 p-2 w-80 h-80 align-middle relative"><DesktopComputerIcon  className="absolute text-gray-200 inset-1/4" /></div>
+        : <div className="bg-white float-right ml-6 p-2 w-80 h-80 align-middle relative"><DesktopComputerIcon className="absolute text-gray-200 inset-1/4" /></div>
         }
 
-        <span className="inline-block bg-yellow-200 text-yellow-900 text-xs mb-4 px-2 py-1 rounded-full uppercase font-bold">TV Show</span>
-        <h1 className="font-bold text-4xl mb-4">{this.state.title}</h1>
+        <MediaTypeBadge mediaType="show" className="mb-2" />
 
-        <section className="text-sm mb-4">
-          <Genres genres={this.state.genres} />
+        <section className="flex items-center mb-3">
+          <h1 className="inline-block font-bold mb-0 text-5xl">{this.state.title}</h1>
 
-          <section>
-            <strong>Rating:</strong> {this.state.score}/10
-          </section>
+          <ExternalLink text="Website" url={this.state.website} />
+        </section>
 
-          <section>
-            <a href={this.state.website} className="font-bold inline-block bg-gray-500 my-2 px-3 py-1.5 rounded text-white text-xs">Website <ExternalLinkIcon className="inline h-5 w-5 -mt-1" /></a>
-          </section>
+        <section className="mb-6">
+          <Score score={this.state.score} />
+          <Genres className="inline-block ml-4" genres={this.state.genres} />
         </section>
 
         <p>{this.state.overview}</p>
