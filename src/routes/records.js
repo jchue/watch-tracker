@@ -31,8 +31,6 @@ function translateMediaType(mediaTypeParam) {
  * GET
  */
 router.get('/:mediaTypeParam/:externalId', (req, res, next) => {
-  debug(`${req.method} ${req.originalUrl}`);
-
   const mediaType = translateMediaType(req.params.mediaTypeParam);
   const externalId = Number(req.params.externalId);
 
@@ -89,8 +87,6 @@ router.get('/:mediaTypeParam/:externalId', (req, res, next) => {
  * POST
  */
 router.post('/:mediaTypeParam/:externalId', (req, res, next) => {
-  debug(`${req.method} ${req.originalUrl}`);
-
   // Initialize data
   const mediaType = translateMediaType(req.params.mediaTypeParam);
   const created = new Date();
@@ -140,8 +136,6 @@ router.post('/:mediaTypeParam/:externalId', (req, res, next) => {
  * DELETE
  */
 router.delete('/:mediaTypeParam/:externalId', (req, res, next) => {
-  debug(`${req.method} ${req.originalUrl}`);
-
   const mediaType = translateMediaType(req.params.mediaTypeParam);
 
   // Prepare bind parameters for SQL

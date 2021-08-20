@@ -7,8 +7,6 @@ const debug = require('debug')('api:server');
 const router = express.Router();
 
 router.get(['/', '/:query'], async (req, res, next) => {
-  debug(`${req.method} ${req.originalUrl}`);
-
   const baseUrl = process.env.BACKEND_BASE_URL;
   const key = process.env.BACKEND_API_KEY;
   const { query } = req.params;

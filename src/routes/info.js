@@ -7,8 +7,6 @@ const debug = require('debug')('api:server');
 const router = express.Router();
 
 router.get('/movie/:externalId', async (req, res, next) => {
-  debug(`${req.method} ${req.originalUrl}`);
-
   const baseUrl = process.env.BACKEND_BASE_URL;
   const key = process.env.BACKEND_API_KEY;
 
@@ -49,8 +47,6 @@ router.get('/movie/:externalId', async (req, res, next) => {
 });
 
 router.get('/movie/:externalId/credits', async (req, res, next) => {
-  debug(`${req.method} ${req.originalUrl}`);
-
   const baseUrl = process.env.BACKEND_BASE_URL;
   const key = process.env.BACKEND_API_KEY;
 
@@ -87,8 +83,6 @@ router.get('/movie/:externalId/credits', async (req, res, next) => {
 });
 
 router.get('/show/:externalId', async (req, res, next) => {
-  debug(`${req.method} ${req.originalUrl}`);
-
   const baseUrl = process.env.BACKEND_BASE_URL;
   const key = process.env.BACKEND_API_KEY;
 
@@ -130,8 +124,6 @@ router.get('/show/:externalId', async (req, res, next) => {
 });
 
 router.get('/show/:externalId/credits', async (req, res, next) => {
-  debug(`${req.method} ${req.originalUrl}`);
-
   const baseUrl = process.env.BACKEND_BASE_URL;
   const key = process.env.BACKEND_API_KEY;
 
@@ -168,8 +160,6 @@ router.get('/show/:externalId/credits', async (req, res, next) => {
 });
 
 router.get('/show/:externalId/season/:seasonNumber', async (req, res, next) => {
-  debug(`${req.method} ${req.originalUrl}`);
-
   const baseUrl = process.env.BACKEND_BASE_URL;
   const key = process.env.BACKEND_API_KEY;
 
