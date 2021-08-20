@@ -34,10 +34,11 @@ router.get('/:mediaTypeParam/:externalId', (req, res, next) => {
   debug(`${req.method} ${req.originalUrl}`);
 
   const mediaType = translateMediaType(req.params.mediaTypeParam);
+  const externalId = Number(req.params.externalId);
 
   // Prepare bind parameters for SQL
   const params = {
-    $externalId: req.params.externalId,
+    $externalId: externalId,
     $mediaType: mediaType,
   };
   const query = 'SELECT * from tracked WHERE external_id = $externalId AND media_type = $mediaType';
@@ -71,11 +72,16 @@ router.get('/:mediaTypeParam/:externalId', (req, res, next) => {
       return next();
     }
 
-    db.close();
+    // Data not found; send not watched by default
+    const data = {
+      id: externalId,
+      watched: false,
+    };
+    res.data = data;
+    debug('Record not found: %o', data);
 
-    // Data not found
-    debug('Record not found');
-    return next(new HTTPError(404));
+    db.close();
+    return next();
   });
 });
 
