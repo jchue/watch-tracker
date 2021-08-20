@@ -51,21 +51,15 @@ class Credits extends React.Component {
 
   loadCredits(mediaType, mediaId) {
     const contentBaseUrl = process.env.REACT_APP_CONTENT_API_BASE_URL;
-    const contentKey = process.env.REACT_APP_CONTENT_API_KEY;
 
-    const url = `${contentBaseUrl}/${mediaType === 'show' ? 'tv' : 'movie'}/${mediaId}/credits`;
-    const config = {
-      params: {
-        api_key: contentKey,
-      },
-    };
+    const url = `${contentBaseUrl}/info/${mediaType}/${mediaId}/credits`;
 
     axios
-    .get(url, config)
+    .get(url)
     .then((response) => {
       this.setState({
-        cast: response.data.cast,
-        crew: response.data.crew,
+        cast: response.data.data.cast,
+        crew: response.data.data.crew,
       });
     }); 
   }

@@ -68,7 +68,7 @@ class Show extends React.Component {
     const contentKey = process.env.REACT_APP_CONTENT_API_KEY;
     const imgBaseUrl = process.env.REACT_APP_IMG_BASE_URL;
 
-    const url = `${contentBaseUrl}/tv/${id}`;
+    const url = `${contentBaseUrl}/info/show/${id}`;
     const config = {
       params: {
         api_key: contentKey,
@@ -79,13 +79,13 @@ class Show extends React.Component {
     .get(url, config)
     .then((response) => {
       this.setState({
-        genres: response.data.genres,
-        title: response.data.name,
-        overview: response.data.overview,
-        score: response.data.vote_average,
-        seasons: response.data.seasons,
-        posterUrl: response.data.poster_path ? `${imgBaseUrl}w300${response.data.poster_path}` : null,
-        website: response.data.homepage,
+        genres: response.data.data.genres,
+        title: response.data.data.name,
+        overview: response.data.data.overview,
+        score: response.data.data.vote_average,
+        seasons: response.data.data.seasons,
+        posterUrl: response.data.data.poster_path ? `${imgBaseUrl}w300${response.data.data.poster_path}` : null,
+        website: response.data.data.homepage,
       });
     });
   }

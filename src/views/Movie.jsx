@@ -61,26 +61,20 @@ class Movie extends React.Component {
 
   loadMovie(id) {
     const contentBaseUrl = process.env.REACT_APP_CONTENT_API_BASE_URL;
-    const contentKey = process.env.REACT_APP_CONTENT_API_KEY;
     const imgBaseUrl = process.env.REACT_APP_IMG_BASE_URL;
 
-    const url = `${contentBaseUrl}/movie/${id}`;
-    const config = {
-      params: {
-        api_key: contentKey,
-      },
-    };
+    const url = `${contentBaseUrl}/info/movie/${id}`;
 
     axios
-    .get(url, config)
+    .get(url)
     .then((response) => {
       this.setState({
-        genres: response.data.genres,
-        title: response.data.title,
-        overview: response.data.overview,
-        score: response.data.vote_average,
-        posterUrl: response.data.poster_path ? `${imgBaseUrl}w300${response.data.poster_path}` : null,
-        website: response.data.homepage,
+        genres: response.data.data.genres,
+        title: response.data.data.title,
+        overview: response.data.data.overview,
+        score: response.data.data.vote_average,
+        posterUrl: response.data.data.poster_path ? `${imgBaseUrl}w300${response.data.data.poster_path}` : null,
+        website: response.data.data.homepage,
       });
     });
   }

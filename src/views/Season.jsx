@@ -85,7 +85,7 @@ class Season extends React.Component{
     const contentBaseUrl = process.env.REACT_APP_CONTENT_API_BASE_URL;
     const contentKey = process.env.REACT_APP_CONTENT_API_KEY;
 
-    const url = `${contentBaseUrl}/tv/${showId}/season/${seasonNumber}`;
+    const url = `${contentBaseUrl}/info/show/${showId}/season/${seasonNumber}`;
     const config = {
       params: {
         api_key: contentKey,
@@ -96,11 +96,11 @@ class Season extends React.Component{
     .get(url, config)
     .then((response) => {
       this.setState({
-        name: response.data.name,
-        overview: response.data.overview,
-        poster: response.data.poster_path,
-        airDate: response.data.air_date,
-        episodes: response.data.episodes,
+        name: response.data.data.name,
+        overview: response.data.data.overview,
+        poster: response.data.data.poster_path,
+        airDate: response.data.data.air_date,
+        episodes: response.data.data.episodes,
       });
     });
 
@@ -119,7 +119,7 @@ class Season extends React.Component{
     const contentBaseUrl = process.env.REACT_APP_CONTENT_API_BASE_URL;
     const contentKey = process.env.REACT_APP_CONTENT_API_KEY;
 
-    const url = `${contentBaseUrl}/tv/${showId}`;
+    const url = `${contentBaseUrl}/info/show/${showId}`;
     const config = {
       params: {
         api_key: contentKey,
@@ -130,7 +130,7 @@ class Season extends React.Component{
     .get(url, config)
     .then((response) => {
       this.setState({
-        showName: response.data.name,
+        showName: response.data.data.name,
       });
     });
   }
