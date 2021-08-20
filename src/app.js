@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import searchRouter from './routes/search';
+import infoRouter from './routes/info';
 import recordsRouter from './routes/records';
 
 const app = express();
@@ -9,6 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/search', searchRouter);
+app.use('/info', infoRouter);
 app.use('/records', recordsRouter);
 
 /* Standardize response structure */
