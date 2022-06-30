@@ -80,7 +80,7 @@ class Show extends React.Component {
     .then((response) => {
       this.setState({
         genres: response.data.data.genres,
-        title: response.data.data.name,
+        title: response.data.data.title,
         overview: response.data.data.overview,
         score: response.data.data.vote_average,
         seasons: response.data.data.seasons,

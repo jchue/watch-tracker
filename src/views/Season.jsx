@@ -130,7 +130,7 @@ class Season extends React.Component{
     .get(url, config)
     .then((response) => {
       this.setState({
-        showName: response.data.data.name,
+        showName: response.data.data.title,
       });
     });
   }
