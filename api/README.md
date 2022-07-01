@@ -1,89 +1,47 @@
-# Watch Tracker API
+# Watch Tracker
 
-## Endpoints
+Just another application to track watched movies and TV shows and a personal project to learn React and Tailwind
 
-This API serves the following endpoints:
+![Home Page](https://user-images.githubusercontent.com/5141427/140625932-9b19a40a-484f-4f3e-ad62-c59ff3fa46fe.png)
+![Search](https://user-images.githubusercontent.com/5141427/140625933-78e28ed1-dafc-44ab-ba44-aa0043ed9661.png)
+![Show Page](https://user-images.githubusercontent.com/5141427/140625934-e890d80b-cb53-4914-baca-4aac116049a4.png)
+![Season Page](https://user-images.githubusercontent.com/5141427/140626395-b3b1df5e-160d-45ba-8f03-e600d72b5474.png)
 
-### GET /records/{externalId}
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-#### Request
+## Available Scripts
 
-**Path Parameters**
-Parameter|Data Type|Description
--|-|-
-externalId|Integer|ID of the media object in the external content backend (TMDb)
+In the project directory, you can run:
 
-#### Response
+### `npm start`
 
-```json
-{
-    "id": 5,
-    "created": "2020-11-11T01:30:33.000Z",
-    "media_type": "tv",
-    "external_id": 1035921,
-    "watched": true,
-    "watched_date": "2020-11-11T01:30:33.000Z"
-}
-```
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-### POST /records/{externalId}
+The page will reload if you make edits.\
+You will also see any lint errors in the console.
 
-#### Request
+### `npm test`
 
-**Path Parameters**
-Parameter|Data Type|Description
--|-|-
-externalId|Integer|ID of the media object in the external content backend (TMDb)
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### DELETE /records/{externalId}
+### `npm run build`
 
-#### Request
+Builds the app for production to the `build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
 
-**Path Parameters**
-Parameter|Data Type|Description
--|-|-
-externalId|Integer|ID of the media object in the external content backend (TMDb)
+The build is minified and the filenames include the hashes.\
+Your app is ready to be deployed!
 
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-## Database
+### `npm run eject`
 
-This service uses SQLite to store information about media that has been wached.
+**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
 
-Field|Data Type|Example
--|-|-
-id|INTEGER|1
-created|INTEGER|
-media_type|TEXT|'tv'
-external_id|INTEGER|12345
-watched|INTEGER|0
-watched_date|INTEGER|
+If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-### Common Operations
+Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
 
-**Create table:**
-```sql
-CREATE TABLE tracked (id INTEGER PRIMARY KEY NOT NULL, created INTEGER NOT NULL, media_type TEXT NOT NULL, external_id INTEGER UNIQUE NOT NULL, watched INTEGER NOT NULL DEFAULT 0, watched_date INTEGER);
-```
-
-**Add row:**
-```sql
-INSERT OR REPLACE INTO tracked (created, media_type, external_id) values (strftime('%s','now'), '<media_type>', <external_id>);
-```
-
-**Update row:**
-```sql
-UPDATE tracked SET watched = 1, watched_date = strftime('%s','now') WHERE external_id = <external_id>;
-```
-
-**Delete row:**
-```sql
-DELETE FROM tracked WHERE external_id = <external_id>;
-```
-
-SQLite stores dates as integer timestamps. See [this](https://www.sqlitetutorial.net/sqlite-date/) page for additional information.
-
-## Environment Variables
-
-Variable|Description
--|-
-SQLITE_DB_FILE|Location of SQLite database file
+You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
