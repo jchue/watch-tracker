@@ -1,31 +1,11 @@
 import express from 'express';
 import DB from '../db';
 import HTTPError from '../error';
+import { translateMediaType } from '../util';
 
 const debug = require('debug')('api:server');
 
 const router = express.Router();
-
-/**
- * Translate media type parameter to DB field
- */
-function translateMediaType(mediaTypeParam) {
-  let mediaType;
-  switch (mediaTypeParam) {
-    case 'movie':
-      mediaType = 'movie';
-      break;
-    case 'show':
-      mediaType = 'tv';
-      break;
-    default: {
-      debug(`Invalid media type URL parameter '${mediaTypeParam}'`);
-      throw new HTTPError(404);
-    }
-  }
-
-  return mediaType;
-}
 
 /**
  * GET
