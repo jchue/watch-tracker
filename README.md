@@ -1,3 +1,12 @@
+# Watch Tracker
+
+Just another application to track watched movies and TV shows and a personal project to learn React and Tailwind
+
+![Home Page](https://user-images.githubusercontent.com/5141427/140625932-9b19a40a-484f-4f3e-ad62-c59ff3fa46fe.png)
+![Search](https://user-images.githubusercontent.com/5141427/140625933-78e28ed1-dafc-44ab-ba44-aa0043ed9661.png)
+![Show Page](https://user-images.githubusercontent.com/5141427/140625934-e890d80b-cb53-4914-baca-4aac116049a4.png)
+![Season Page](https://user-images.githubusercontent.com/5141427/140626395-b3b1df5e-160d-45ba-8f03-e600d72b5474.png)
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
