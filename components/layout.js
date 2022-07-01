@@ -16,7 +16,7 @@ export default function Layout({ children }) {
             <Search />
           </div>
         </header>
-        <main className="pt-16 flex-grow">
+        <main className="grow pt-16">
           <div className="max-w-5xl mx-auto h-full">
           {children}
           </div>
