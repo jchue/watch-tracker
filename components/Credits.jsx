@@ -1,14 +1,7 @@
 import { useEffect, useState } from 'react';
 import Person from './Person';
 
-function Credits({ className, creditType, mediaType, mediaId }) {
-  const [credits, setCredits] = useState({
-    cast: [],
-    crew: [],
-  });
-
-  useEffect(() => { loadCredits(mediaType, mediaId) }, [mediaType, mediaId]);
-
+function Credits({ className, credits, creditType, mediaType, mediaId }) {
   /* Display cast by default */
   let members;
   let title = 'Cast';
@@ -34,18 +27,6 @@ function Credits({ className, creditType, mediaType, mediaId }) {
         </ul>
       </section>
     );
-  }
-
-  async function loadCredits(mediaType, mediaId) {
-    const url = `/api/info/${mediaType}/${mediaId}/credits`;
-
-    const response = await fetch(url);
-    const data = await response.json();
-
-    setCredits({
-      cast: data.cast,
-      crew: data.crew,
-    });
   }
 }
 

@@ -12,7 +12,7 @@ export default function Layout({ children }) {
       <div className="font-sans text-gray-800 h-full flex flex-col">
         <header className="bg-white py-4 shadow-sm">
           <div className="max-w-5xl mx-auto">
-            <Link href="/"><span className="font-bold mr-8">Watch Tracker</span></Link>
+            <Link href="/"><a className="font-bold mr-8">Watch Tracker</a></Link>
             <Search />
           </div>
         </header>

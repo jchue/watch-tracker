@@ -10,7 +10,7 @@ class SeasonTile extends React.Component {
     const aired = this.props.airDate ? DateTime.fromISO(this.props.airDate).toFormat('yyyy') : null;
 
     return (
-      <Link href={`/shows/${this.props.showId}/${this.props.seasonNumber}`}>
+      <Link href={`/shows/${this.props.showId}/seasons/${this.props.seasonNumber}`}>
         <a className="bg-white block pb-3 rounded-md shadow-md hover:bg-gray-100 transition-colors duration-200">
           {posterUrl
           ? <div style={{ backgroundImage: 'url(' + posterUrl + ')', paddingTop: '150%'}} className="bg-center bg-cover bg-no-repeat rounded-t-md w-full h-20"></div>

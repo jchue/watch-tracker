@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Genres from '../../components/Genres';
 import Credits from '../../components/Credits';
@@ -8,25 +7,16 @@ import ExternalLink from '../../components/ExternalLink';
 import Score from '../../components/Score';
 import { DesktopComputerIcon } from '@heroicons/react/solid';
 
-function Show() {
-  const [show, setShow] = useState({
-    title: '',
-    genres: [],
-    overview: '',
-    score: 0,
-    seasons: [],
-    posterUrl: '',
-    website: '',
-  });
-
+function Show({ show, credits }) {
   const router = useRouter();
 
-  useEffect(() => { loadShow(router.query.showId) }, [router.query.showId]);
+  const imgBaseUrl = process.env.NEXT_PUBLIC_IMG_BASE_URL;
+  const posterUrl = show.posterPath ? `${imgBaseUrl}w300${show.posterPath}` : null;
 
   return (
     <div>
-      {show.posterUrl
-      ? <img src={show.posterUrl} alt={`${show.title} Poster`} className="bg-white float-right ml-6 p-2" />
+      {posterUrl
+      ? <img src={posterUrl} alt={`${show.title} Poster`} className="bg-white float-right ml-6 p-2" />
       : <div className="bg-white float-right ml-6 p-2 w-80 h-80 align-middle relative"><DesktopComputerIcon className="absolute text-gray-200 inset-1/4" /></div>
       }
 
@@ -45,30 +35,57 @@ function Show() {
 
       <p>{show.overview}</p>
 
-      <Credits mediaId={router.query.showId} mediaType="shows" creditType="cast" className="mb-8" />
+      <Credits credits={credits} creditType="cast" className="mb-8" />
 
-      <Seasons showId={router.query.showId} seasons={show.seasons} />
+      <Seasons showId={router.query.id} seasons={show.seasons} />
     </div>
   );
+}
 
-  async function loadShow(id) {
-    const imgBaseUrl = process.env.NEXT_PUBLIC_IMG_BASE_URL;
+export async function getServerSideProps({ params }) {
+  async function getShow(id) {
+    const baseUrl = process.env.BACKEND_BASE_URL;
+    const key = process.env.BACKEND_API_KEY;
 
-    const url = `/api/info/shows/${id}`;
+    const url = `${baseUrl}/tv/${id}?api_key=${key}`;
 
     const response = await fetch(url);
     const data = await response.json();
 
-    setShow({
+    const show = {
       genres: data.genres,
-      title: data.title,
+      website: data.homepage,
       overview: data.overview,
+      posterPath: data.poster_path,
       score: data.vote_average,
       seasons: data.seasons,
-      posterUrl: data.poster_path ? `${imgBaseUrl}w300${data.poster_path}` : null,
-      website: data.homepage,
-    });
+      title: data.name,
+    };
+
+    return show;
   }
-}
+
+  async function getShowCredits(id) {
+    const baseUrl = process.env.BACKEND_BASE_URL;
+    const key = process.env.BACKEND_API_KEY;
+
+    const url = `${baseUrl}/tv/${id}/credits?api_key=${key}`;
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    const credits = {
+      cast: data.cast,
+      crew: data.crew,
+    };
+
+    return credits;
+  }
+
+  const show = await getShow(params.id);
+  const credits = await getShowCredits(params.id);
+
+  return { props: { show, credits } };
+};
 
 export default Show;

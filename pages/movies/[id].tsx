@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Genres from '../../components/Genres';
 import Credits from '../../components/Credits';
@@ -7,42 +6,16 @@ import ExternalLink from '../../components/ExternalLink';
 import Score from '../../components/Score';
 import { DesktopComputerIcon } from '@heroicons/react/solid';
 
-function Movie() {
-  const [movie, setMovie] = useState({
-    title: '',
-    genres: [],
-    overview: '',
-    score: 0,
-    posterUrl: '',
-    website: '',
-  });
-
+function Movie({ movie, credits }) {
   const router = useRouter();
 
-  useEffect(() => { loadMovie(router.query.id) }, [router.query.id]);
-
-  async function loadMovie(id) {
-    const imgBaseUrl = process.env.NEXT_PUBLIC_IMG_BASE_URL;
-
-    const url = `/api/info/movies/${id}`;
-
-    const response = await fetch(url);
-    const data = await response.json();
-
-    setMovie({
-      genres: data.genres,
-      title: data.title,
-      overview: data.overview,
-      score: data.vote_average,
-      posterUrl: data.poster_path ? `${imgBaseUrl}w300${data.poster_path}` : null,
-      website: data.homepage,
-    });
-  }
+  const imgBaseUrl = process.env.NEXT_PUBLIC_IMG_BASE_URL;
+  const posterUrl = movie.posterPath ? `${imgBaseUrl}w300${movie.posterPath}` : null;
 
   return (
     <div>
-      {movie.posterUrl
-      ? <img src={movie.posterUrl} alt={`${movie.title} Poster`} className="bg-white float-right ml-6 p-2" />
+      {posterUrl
+      ? <img src={posterUrl} alt={`${movie.title} Poster`} className="bg-white float-right ml-6 p-2" />
       : <div className="bg-white float-right ml-6 p-2 w-80 h-80 align-middle relative"><DesktopComputerIcon  className="absolute text-gray-200 inset-1/4" /></div>
       }
 
@@ -61,9 +34,54 @@ function Movie() {
 
       <p>{movie.overview}</p>
 
-      <Credits mediaId={router.query.id} mediaType="movies" creditType="cast" />
+      <Credits credits={credits} creditType="cast" />
     </div>
   );
+}
+
+export async function getServerSideProps({ params }) {
+  async function getMovie(id) {
+    const baseUrl = process.env.BACKEND_BASE_URL;
+    const key = process.env.BACKEND_API_KEY;
+
+    const url = `${baseUrl}/movie/${id}?api_key=${key}`;
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    const movie = {
+      genres: data.genres,
+      website: data.homepage,
+      overview: data.overview,
+      posterPath: data.poster_path,
+      score: data.vote_average,
+      title: data.title,
+    };
+
+    return movie;
+  }
+
+  async function getMovieCredits(id) {
+    const baseUrl = process.env.BACKEND_BASE_URL;
+    const key = process.env.BACKEND_API_KEY;
+
+    const url = `${baseUrl}/movie/${id}/credits?api_key=${key}`;
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    const credits = {
+      cast: data.cast,
+      crew: data.crew,
+    };
+
+    return credits;
+  }
+
+  const movie = await getMovie(params.id);
+  const credits = await getMovieCredits(params.id);
+
+  return { props: { movie, credits } };
 }
 
 export default Movie;
