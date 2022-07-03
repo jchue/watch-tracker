@@ -40,10 +40,12 @@ export default async function handler(
 
       // Return generic server error
       res.status(500).json({ error: 'Internal Server Error' });
+      return;
     }
   }
 
   console.log(`Movies: ${results.movies.length}, People: ${results.people.length}, Shows: ${results.shows.length}`);
 
   res.status(200).json(results);
-}
+  return;
+};
