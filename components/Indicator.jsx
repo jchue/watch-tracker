@@ -17,7 +17,7 @@ class Indicator extends React.Component {
 
   render() {
     return (
-      <input type="checkbox" checked={this.state.watched ? 'checked' : ''} onChange={this.toggleWatchedStatus.bind(this, this.props.id, this.props.mediaType)} className="h-6 w-6 border-gray-300 rounded cursor-pointer text-indigo-800 focus:ring-indigo-800 hover:text-indigo-500" />
+      <input type="checkbox" checked={this.state.watched ? 'checked' : ''} onChange={this.toggleWatchedStatus.bind(this, this.props.id, this.props.mediaType)} className={'h-6 w-6 border-gray-300 rounded cursor-pointer text-indigo-800 focus:ring-indigo-800 hover:text-indigo-500 ' + this.props.className} />
     );
   }
 

@@ -4,6 +4,7 @@ import Credits from '../../components/Credits';
 import MediaTypeBadge from '../../components/MediaTypeBadge';
 import ExternalLink from '../../components/ExternalLink';
 import Score from '../../components/Score';
+import Indicator from '../../components/Indicator';
 import { DesktopComputerIcon } from '@heroicons/react/solid';
 
 function Movie({ movie, credits }) {
@@ -22,6 +23,8 @@ function Movie({ movie, credits }) {
       <MediaTypeBadge mediaType="movie" className="mb-2" />
 
       <section className="flex items-center mb-3">
+        <Indicator id={router.query.id} mediaType="shows" className="mr-2" />
+
         <h1 className="inline-block font-bold mb-0 text-5xl">{movie.title}</h1>
 
         <ExternalLink text="Website" url={movie.website} />
