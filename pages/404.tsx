@@ -17,7 +17,7 @@ function Back() {
   const router = useRouter();
 
   return (
-    <span onClick={() => router.back()} className="cursor-pointer text-purple-500">Go back.</span>
+    <span onClick={() => router.back()} className="cursor-pointer text-indigo-600 hover:text-indigo-500">Go back.</span>
   );
 }
 

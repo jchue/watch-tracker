@@ -27,7 +27,7 @@ function Season({ season }) {
           <h1 className="font-bold text-5xl mb-2">{season.title} {aired && `(${aired})` }</h1>
 
           <Link href={`/shows/${router.query.id}`}>
-            <a className="block mb-4 text-xl text-indigo-500">
+            <a className="block mb-4 text-xl text-indigo-600 hover:text-indigo-500">
               <ArrowCircleLeftIcon className="inline h-5 w-5 -mt-0.5 mr-1" />{season.showTitle}
             </a>
           </Link>
