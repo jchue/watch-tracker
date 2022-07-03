@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import Person from './Person';
 
 function Credits({ className, credits, creditType, mediaType, mediaId }) {
@@ -21,7 +20,7 @@ function Credits({ className, credits, creditType, mediaType, mediaId }) {
         <ul>
           {members.map((member, index) =>
             <li key={member.id} className="inline-block m-1">
-              <Person name={member.name} photo={member.profile_path} role={member.character || member.job} />
+              <Person id={member.id} name={member.name} photo={member.profile_path} role={member.character || member.job} />
             </li>
           )}
         </ul>
