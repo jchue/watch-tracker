@@ -43,6 +43,8 @@ function Search() {
     }, 1000));
   }
 
+  const maxResults = 5;
+
   return (
     <form className={styles.search + ' relative inline'}>
       <div className="inline-block bg-gray-100 border-0 rounded-md px-3 py-2 focus-within:ring-2 focus-within:ring-indigo-500">
@@ -50,7 +52,7 @@ function Search() {
         <input type="text" ref={queryRef} placeholder="Search" onChange={triggerSearch} className="bg-gray-100 border-0 text-gray-500 focus:ring-0 m-0 p-0 outline-none" />
 
         {queryRef.current && queryRef.current.value &&
-          <ul className={styles.results + ' bg-white px-4 pt-4 rounded-lg shadow-lg z-10'}>
+          <ul className={styles.results + ' bg-white max-h-screen overflow-y-scroll px-4 pt-4 rounded-lg shadow-lg'}>
             {loading &&
               <li className="mb-4 px-3 py-1.5 text-gray-700 text-sm">Loading...</li>
             }
@@ -62,9 +64,14 @@ function Search() {
             {(results.shows.length > 0) &&
               <li className="mb-4"><span className="block uppercase text-gray-400 text-xs font-bold px-3 py-2"><DesktopComputerIcon className="inline h-5 w-5 mr-1" /> TV Shows</span>
                 <ul>
-                  {results.shows.map((show) =>
-                    <SearchResult mediaType="shows" mediaId={show.id} name={show.name} key={show.id} />
-                  )}
+                  {results.shows.map((show, index) => {
+                    // Cap the number of results
+                    if (index < Math.min(results.shows.length, maxResults)) {
+                      return (
+                        <SearchResult mediaType="shows" mediaId={show.id} title={show.title} key={show.id} />
+                      );
+                    }
+                  })}
                 </ul>
               </li>
             }
@@ -72,9 +79,14 @@ function Search() {
             {(results.movies.length > 0) &&
               <li className="mb-4"><span className="block uppercase text-gray-400 text-xs font-bold px-3 py-2"><FilmIcon className="inline h-5 w-5 mr-2" />Movies</span>
                 <ul>
-                  {results.movies.map((movie) =>
-                    <SearchResult mediaType="movies" mediaId={movie.id} title={movie.title} key={movie.id} />
-                  )}
+                  {results.movies.map((movie, index) => {
+                    // Cap the number of results
+                    if (index < Math.min(results.movies.length, maxResults)) {
+                      return (
+                        <SearchResult mediaType="movies" mediaId={movie.id} title={movie.title} key={movie.id} />
+                      );
+                    }
+                  })}
                 </ul>
               </li>
             }
@@ -82,9 +94,14 @@ function Search() {
             {(results.people.length > 0) &&
               <li className="mb-4"><span className="block uppercase text-gray-400 text-xs font-bold px-3 py-2"><UserIcon className="inline h-5 w-5 mr-2" />People</span>
                 <ul>
-                  {results.people.map((person) =>
-                    <SearchResult mediaType="people" mediaId={person.id} title={person.name} key={person.id} />
-                  )}
+                  {results.people.map((person, index) => {
+                    // Cap the number of results
+                    if (index < Math.min(results.movies.length, maxResults)) {
+                      return (
+                        <SearchResult mediaType="people" mediaId={person.id} title={person.name} key={person.id} />
+                      );
+                    }
+                  })}
                 </ul>
               </li>
             }
@@ -97,7 +114,13 @@ function Search() {
 
 function SearchResult(props) {
   return (
-    <li><Link href={ `/${props.mediaType}/${props.mediaId}` }><a className="block rounded px-3 py-1.5 text-gray-700 text-sm hover:bg-gray-100 transition-colors duration-200">{props.name || props.title}</a></Link></li>
+    <li>
+      <Link href={ `/${props.mediaType}/${props.mediaId}` }>
+        <a className="block rounded px-3 py-1.5 text-gray-700 text-sm hover:bg-gray-100 transition-colors duration-200">
+          {props.title}
+        </a>
+      </Link>
+    </li>
   );
 }
 

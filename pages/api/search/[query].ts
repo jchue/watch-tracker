@@ -19,7 +19,7 @@ export default async function handler(
 
   // If empty query, skip directly to empty response
   if (query) {
-    const url = `${baseUrl}/search/multi?api_key=${key}&query=${query}`;
+    const url = `${baseUrl}/search/multi?api_key=${key}&query=${encodeURIComponent(query)}`;
 
     try {
       const response = await fetch(url);
@@ -27,9 +27,17 @@ export default async function handler(
 
       data.results.forEach((result) => {
         if (result.media_type === 'tv') {
-          results.shows.push(result);
+          results.shows.push({
+            id: result.id,
+            title: result.name,
+            startDate: result.first_air_date,
+          });
         } else if (result.media_type === 'movie') {
-          results.movies.push(result);
+          results.movies.push({
+            id: result.id,
+            title: result.title,
+            date: result.release_date,
+          });
         } else if (result.media_type === 'person') {
           results.people.push(result);
         }
