@@ -28,7 +28,7 @@ function Movie({ movie, credits }) {
         <MediaTypeBadge mediaType="movie" className="mb-2" />
 
         <div className="flex items-center mb-3">
-          <Indicator id={router.query.id} mediaType="shows" className="mr-2" />
+          <Indicator id={router.query.id} mediaType="movies" className="mr-2" />
 
           <h1 className="inline-block font-bold mb-0 text-5xl">
             {movie.title} {yearString}
