@@ -23,22 +23,6 @@ class Person extends React.Component {
       </Link>
     );
   }
-
-  async loadPerson(id) {
-    const contentBaseUrl = process.env.NEXT_PUBLIC_CONTENT_BASE_URL;
-    const contentKey = process.env.NEXT_PUBLIC_CONTENT_API_KEY;
-    const imgBaseUrl = process.env.NEXT_PUBLIC_IMG_BASE_URL;
-
-    const url = `${contentBaseUrl}/person/${id}?api_key=${contentKey}`;
-
-    const response = await fetch(url);
-    const data = await response.json();
-
-    this.setState({
-      name: data.name,
-      photo: data.profile_path ? `${imgBaseUrl}w45${data.profile_path}` : null,
-    });
-  }
 }
 
 export default Person;

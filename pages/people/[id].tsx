@@ -11,8 +11,8 @@ function Person({ person, credits }) {
   return (
     <div>
       {photoUrl
-      ? <img src={photoUrl} alt={`${person.name} Photo`} className="bg-white float-right ml-6 p-2" />
-      : <div className="bg-white float-right ml-6 p-2 w-80 h-80 align-middle relative"><DesktopComputerIcon  className="absolute text-gray-200 inset-1/4" /></div>
+        ? <img src={photoUrl} alt={`${person.name} Photo`} className="bg-white float-right ml-6 p-2" />
+        : <div className="bg-white float-right ml-6 p-2 w-80 h-80 align-middle relative"><DesktopComputerIcon  className="absolute text-gray-200 inset-1/4" /></div>
       }
 
       <h1 className="inline-block font-bold mb-6 text-5xl">{person.name}</h1>
@@ -28,9 +28,26 @@ function Person({ person, credits }) {
 
         <ul>
           {credits.cast.map((credit) => {
+            const year = credit.date ? DateTime.fromISO(credit.date).toLocaleString({year: 'numeric'}) : null;
+            const yearString = year ? `(${year})` : null;
+
+            const startYear = credit.startDate ? DateTime.fromISO(credit.startDate).toLocaleString({year: 'numeric'}) : null;
+            const endYear = credit.endDate ? DateTime.fromISO(credit.endDate).toLocaleString({year: 'numeric'}) : null;
+            let yearRangeString;
+            if (startYear) {
+              if (endYear) {
+                if (startYear === endYear) {
+                  yearRangeString = `(${startYear})`;
+                } else {
+                  yearRangeString = `(${startYear} - ${endYear})`;
+                }
+              } else {
+                yearRangeString = `(${startYear})`;
+              }
+            }
+
             const imgBaseUrl = process.env.NEXT_PUBLIC_IMG_BASE_URL;
             const posterUrl = credit.posterPath ? `${imgBaseUrl}w300${credit.posterPath}` : null;
-            const year = credit.date ? DateTime.fromISO(credit.date).toFormat('yyyy') : credit.startDate ? `${DateTime.fromISO(credit.startDate).toFormat('yyyy')} - ${DateTime.fromISO(credit.endDate).toFormat('yyyy')}`: null;
 
             return (
               <li key={credit.id} className="mb-4">
@@ -51,7 +68,7 @@ function Person({ person, credits }) {
                     <div className="align-middle inline-block">
                     <MediaTypeBadge mediaType={credit.mediaType}  />
 
-                      <h3 className="font-bold -mb-1">{credit.title} {year && `(${year})` }</h3>
+                      <h3 className="font-bold -mb-1">{credit.title} {yearString || yearRangeString}</h3>
 
                       <span className="text-gray-500">{credit.character}</span>
                       <span className="block mb-1 text-center text-gray-500 text-sm"></span>
@@ -101,6 +118,10 @@ export async function getServerSideProps({ params }) {
     const cast = await Promise.all(data.cast.map(async (credit) => {
       const mediaType = credit.media_type === 'movie' ? 'movie' : credit.media_type === 'tv' ? 'show' : null;
 
+      /**
+       * For shows, find the min/max dates (cannot depend on default order)
+       */
+
       let startDate;
       let endDate;
       if (mediaType === 'show') {
@@ -109,10 +130,14 @@ export async function getServerSideProps({ params }) {
         let response = await fetch(url);
         const creditData = await response.json();
 
-        startDate = creditData.media.seasons[0].air_date;
-        endDate = creditData.media.seasons[0].air_date;
+        if (creditData.media.seasons.length) {
+          startDate = creditData.media.seasons[0].air_date;
+          endDate = creditData.media.seasons[0].air_date;
+        } else {
+          startDate = creditData.media.first_air_date;
+          endDate = creditData.media.first_air_date;
+        }
 
-        // Find the min/max dates (cannot depend on default order)
         creditData.media.seasons.forEach((season) => {
           const seasonDate =  season.air_date;
           
@@ -137,6 +162,10 @@ export async function getServerSideProps({ params }) {
         mediaType,
       };
     }));
+
+    /**
+     * Sort all credits
+     */
 
     cast.sort((a, b) => {
       // Sort by most recent date

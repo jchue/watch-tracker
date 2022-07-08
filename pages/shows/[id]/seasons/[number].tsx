@@ -9,22 +9,24 @@ import Episode from '../../../../components/Episode';
 function Season({ season }) {
   const router = useRouter();
 
+  const startYear = season.startDate ? DateTime.fromISO(season.startDate).toLocaleString({year: 'numeric'}) : null;
+  const startYearString = startYear ? `(${startYear})` : null;
+
   const imgBaseUrl = process.env.NEXT_PUBLIC_IMG_BASE_URL;
   const posterUrl = season.posterPath ? `${imgBaseUrl}w300${season.posterPath}` : null;
-  const aired = season.airDate ? DateTime.fromISO(season.airDate).toFormat('yyyy') : null;
 
   return (
     <div>
       <section className="flex mb-8">
         {posterUrl
-        ? <img src={posterUrl} alt={`${season.showTitle} ${season.title} Poster`} className="bg-white mr-6 p-2" />
-        : <div className="bg-white mr-6 p-2 w-80 h-80 align-middle relative"><DesktopComputerIcon  className="absolute text-gray-200 inset-1/4" /></div>
+          ? <img src={posterUrl} alt={`${season.showTitle} ${season.title} Poster`} className="bg-white mr-6 p-2" />
+          : <div className="bg-white mr-6 p-2 w-80 h-80 align-middle relative"><DesktopComputerIcon  className="absolute text-gray-200 inset-1/4" /></div>
         }
 
         <div>
           <MediaTypeBadge mediaType="show" className="mb-2" />
 
-          <h1 className="font-bold text-5xl mb-2">{season.title} {aired && `(${aired})` }</h1>
+          <h1 className="font-bold text-5xl mb-2">{season.title} {startYearString}</h1>
 
           <Link href={`/shows/${router.query.id}`}>
             <a className="block mb-4 text-xl text-indigo-600 hover:text-indigo-500">
@@ -63,7 +65,7 @@ function Episodes(props) {
   if (props.episodes) {
     return (
       props.episodes.map((episode) =>
-        <Episode key={episode.id} number={episode.episode_number} name={episode.name} airDate={episode.air_date} stillPath={episode.still_path} voteCount={episode.vote_count} voteAverage={episode.vote_average} overview={episode.overview} mediaId={episode.id} />
+        <Episode key={episode.number} number={episode.number} title={episode.title} date={episode.date} stillPath={episode.stillPath} votes={episode.votes} score={episode.score} overview={episode.overview} mediaId={episode.id} />
       )
     );
   }
@@ -78,13 +80,30 @@ export async function getServerSideProps({ params }) {
   let response = await fetch(url);
   let data = await response.json();
 
+  const episodes = data.episodes.map((episode) => {
+    return {
+      id: episode.id,
+      number: episode.episode_number,
+      title: episode.name,
+      date: episode.air_date,
+      stillPath: episode.still_path,
+      votes: episode.vote_count,
+      score: episode.vote_average,
+      overview: episode.overview
+    };
+  });
+
   let season = {
-    airDate: data.air_date,
-    episodes: data.episodes,
+    startDate: data.air_date,
+    episodes,
     overview: data.overview,
     posterPath: data.poster_path,
     title: data.name,
   };
+
+  /**
+   * Get show title
+   */
 
   url = `${baseUrl}/tv/${params.id}?api_key=${key}`;
 

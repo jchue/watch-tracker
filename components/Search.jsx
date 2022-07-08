@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import Link from 'next/link';
+import { DateTime } from 'luxon';
 import styles from './Search.module.css';
 import { FilmIcon, DesktopComputerIcon, SearchIcon, UserIcon } from '@heroicons/react/solid';
 
@@ -68,7 +69,7 @@ function Search() {
                     // Cap the number of results
                     if (index < Math.min(results.shows.length, maxResults)) {
                       return (
-                        <SearchResult mediaType="shows" mediaId={show.id} title={show.title} key={show.id} />
+                        <SearchResult mediaType="shows" mediaId={show.id} title={show.title} date={show.startDate} key={show.id} />
                       );
                     }
                   })}
@@ -83,7 +84,7 @@ function Search() {
                     // Cap the number of results
                     if (index < Math.min(results.movies.length, maxResults)) {
                       return (
-                        <SearchResult mediaType="movies" mediaId={movie.id} title={movie.title} key={movie.id} />
+                        <SearchResult mediaType="movies" mediaId={movie.id} title={movie.title} date={movie.date} key={movie.id} />
                       );
                     }
                   })}
@@ -113,11 +114,16 @@ function Search() {
 }
 
 function SearchResult(props) {
+  const year = props.date ? DateTime.fromISO(props.date).toLocaleString({year: 'numeric'}) : null;
+
   return (
     <li>
       <Link href={ `/${props.mediaType}/${props.mediaId}` }>
         <a className="block rounded px-3 py-1.5 text-gray-700 text-sm hover:bg-gray-100 transition-colors duration-200">
           {props.title}
+          {year &&
+            ` (${year})`
+          }
         </a>
       </Link>
     </li>

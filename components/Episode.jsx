@@ -24,8 +24,9 @@ class Episode extends React.Component {
   }
 
   render() {
+    const dateString = this.props.date ? DateTime.fromISO(this.props.date).toLocaleString(DateTime.DATE_MED) : null;
+
     const imgBaseUrl = process.env.NEXT_PUBLIC_IMG_BASE_URL;
-    const airDate = this.props.airDate ? DateTime.fromISO(this.props.airDate).toLocaleString() : null;
     const stillUrl = this.props.stillPath ? `${imgBaseUrl}original${this.props.stillPath}` : null;
 
     return (
@@ -41,11 +42,11 @@ class Episode extends React.Component {
           </td>
 
           <td className={'p-3 transition-all duration-200' + (this.state.visible ? ' font-bold text-lg' : '')} onClick={this.toggleEpisodeDetails}>
-            {this.props.name}
+            {this.props.title}
           </td>
 
           <td className={'p-3 pr-8 text-right transition-all duration-200' + (this.state.visible ? ' font-bold text-lg' : '')} onClick={this.toggleEpisodeDetails}>
-            {airDate}
+            {dateString}
           </td>
         </tr>
 
@@ -54,13 +55,13 @@ class Episode extends React.Component {
           <td colSpan="4" className="p-0">
             <div className={'overflow-hidden px-8 transition-all duration-200 ' + (this.state.visible ? 'max-h-screen pt-4 pb-8' : 'max-h-0 py-0')}>
               {stillUrl
-              ? <img src={stillUrl} alt={`${this.props.name} Still`} className="float-left mr-4 max-w-sm" />
+              ? <img src={stillUrl} alt={`${this.props.title} Still`} className="float-left mr-4 max-w-sm" />
               : <div className="bg-gray-100 float-left mr-4 w-40 h-40 align-middle relative"><DesktopComputerIcon  className="absolute text-gray-200 inset-1/4" /></div>
               }
 
               {/* Only show vote score if there are votes */}
               <span className="block mb-4">
-                {this.props.voteCount ? <Score score={this.props.voteAverage} /> : ''}
+                {this.props.votes ? <Score score={this.props.score} /> : ''}
               </span>
 
               <p className="mb-0">{this.props.overview}</p>

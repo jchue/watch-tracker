@@ -1,14 +1,18 @@
 import { useRouter } from 'next/router';
+import { DateTime } from 'luxon';
+import { DesktopComputerIcon } from '@heroicons/react/solid';
 import Genres from '../../components/Genres';
 import Credits from '../../components/Credits';
 import MediaTypeBadge from '../../components/MediaTypeBadge';
 import ExternalLink from '../../components/ExternalLink';
 import Score from '../../components/Score';
 import Indicator from '../../components/Indicator';
-import { DesktopComputerIcon } from '@heroicons/react/solid';
 
 function Movie({ movie, credits }) {
   const router = useRouter();
+
+  const year = movie.date ? DateTime.fromISO(movie.date).toLocaleString({year: 'numeric'}) : null;
+  const yearString = year ? `(${year})` : null;
 
   const imgBaseUrl = process.env.NEXT_PUBLIC_IMG_BASE_URL;
   const posterUrl = movie.posterPath ? `${imgBaseUrl}w300${movie.posterPath}` : null;
@@ -16,19 +20,23 @@ function Movie({ movie, credits }) {
   return (
     <div>
       {posterUrl
-      ? <img src={posterUrl} alt={`${movie.title} Poster`} className="bg-white float-right ml-6 p-2" />
-      : <div className="bg-white float-right ml-6 p-2 w-80 h-80 align-middle relative"><DesktopComputerIcon  className="absolute text-gray-200 inset-1/4" /></div>
+        ? <img src={posterUrl} alt={`${movie.title} Poster`} className="bg-white float-right ml-6 p-2" />
+        : <div className="bg-white float-right ml-6 p-2 w-80 h-80 align-middle relative"><DesktopComputerIcon  className="absolute text-gray-200 inset-1/4" /></div>
       }
 
-      <MediaTypeBadge mediaType="movie" className="mb-2" />
+      <header>
+        <MediaTypeBadge mediaType="movie" className="mb-2" />
 
-      <section className="flex items-center mb-3">
-        <Indicator id={router.query.id} mediaType="shows" className="mr-2" />
+        <div className="flex items-center mb-3">
+          <Indicator id={router.query.id} mediaType="shows" className="mr-2" />
 
-        <h1 className="inline-block font-bold mb-0 text-5xl">{movie.title}</h1>
+          <h1 className="inline-block font-bold mb-0 text-5xl">
+            {movie.title} {yearString}
+          </h1>
 
-        <ExternalLink text="Website" url={movie.website} />
-      </section>
+          <ExternalLink text="Website" url={movie.website} />
+        </div>
+      </header>
 
       <section className="mb-6">
         <Score score={movie.score} />
@@ -37,7 +45,9 @@ function Movie({ movie, credits }) {
 
       <p>{movie.overview}</p>
 
-      <Credits credits={credits} creditType="cast" />
+      {(credits.cast.length > 0) &&
+        <Credits credits={credits} creditType="cast" />
+      }
     </div>
   );
 }
@@ -59,6 +69,7 @@ export async function getServerSideProps({ params }) {
       posterPath: data.poster_path,
       score: data.vote_average,
       title: data.title,
+      date: data.release_date,
     };
 
     return movie;
