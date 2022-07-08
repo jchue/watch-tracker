@@ -1,27 +1,13 @@
-import React from 'react';
+import { useEffect, useState } from 'react';
 
-class Indicator extends React.Component {
-  constructor(props) {
-    super(props);
+function Indicator({ id, mediaType, className }) {
+  const [watched, setWatched] = useState(false);
 
-    this.state = {
-      watched: false,
-    };
+  useEffect(() => {
+    getWatchedStatus(id, mediaType);
+  }, [id, mediaType]);
 
-    this.toggleWatchedStatus = this.toggleWatchedStatus.bind(this);
-  }
-
-  componentDidMount() {
-    this.getWatchedStatus(this.props.id, this.props.mediaType);
-  }
-
-  render() {
-    return (
-      <input type="checkbox" checked={this.state.watched ? 'checked' : ''} onChange={this.toggleWatchedStatus.bind(this, this.props.id, this.props.mediaType)} className={'h-6 w-6 border-gray-300 rounded cursor-pointer text-indigo-800 focus:ring-indigo-800 hover:text-indigo-500 ' + this.props.className} />
-    );
-  }
-
-  async getWatchedStatus(id, mediaTypeParam) {
+  async function getWatchedStatus(id, mediaTypeParam) {
     let mediaType = 'shows';
     if (mediaTypeParam === 'movies') {
       mediaType = 'movies';
@@ -33,17 +19,13 @@ class Indicator extends React.Component {
       const response = await fetch(url);
       const data = await response.json();
 
-      this.setState({
-        watched: data.watched,
-      });
+      setWatched(data.watched);
     } catch (error) {
-      this.setState({
-        watched: false,
-      });
+      setWatched(false);
     }
   }
 
-  async toggleWatchedStatus(id, mediaTypeParam) {
+  async function toggleWatchedStatus(id, mediaTypeParam) {
     let mediaType = 'shows';
     if (mediaTypeParam === 'movies') {
       mediaType = 'movies';
@@ -51,21 +33,21 @@ class Indicator extends React.Component {
 
     const url = `/api/records/${mediaType}/${id}`;
 
-    if (!this.state.watched) {
+    if (!watched) {
       const response = await fetch(url, { method: 'POST' });
       const data = await response.json();
 
-      this.setState({
-        watched: true,
-      });
+      setWatched(true);
     } else {
       const response = await fetch(url, { method: 'DELETE' });
 
-      this.setState({
-        watched: false,
-      });
+      setWatched(false);
     }
   }
+
+  return (
+    <input type="checkbox" checked={watched ? 'checked' : ''} onChange={() => toggleWatchedStatus(id, mediaType)} className={'h-6 w-6 border-gray-300 rounded cursor-pointer text-indigo-800 focus:ring-indigo-800 hover:text-indigo-500 ' + className} />
+  );
 }
 
 export default Indicator;

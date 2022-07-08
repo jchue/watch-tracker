@@ -1,6 +1,6 @@
 import Person from './Person';
 
-function Credits({ className, credits, creditType, mediaType, mediaId }) {
+function Credits({ className, credits, creditType }) {
   /* Display cast by default */
   let members;
   let title = 'Cast';

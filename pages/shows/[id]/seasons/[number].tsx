@@ -89,7 +89,7 @@ export async function getServerSideProps({ params }) {
       stillPath: episode.still_path,
       votes: episode.vote_count,
       score: episode.vote_average,
-      overview: episode.overview
+      overview: episode.overview,
     };
   });
 
