@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { DateTime } from 'luxon';
 import { DesktopComputerIcon } from '@heroicons/react/solid';
@@ -6,10 +7,47 @@ import Credits from '../../components/Credits';
 import MediaTypeBadge from '../../components/MediaTypeBadge';
 import ExternalLink from '../../components/ExternalLink';
 import Score from '../../components/Score';
-import Indicator from '../../components/Indicator';
+import Checkbox from '../../components/Checkbox';
 
 function Movie({ movie, credits }) {
   const router = useRouter();
+
+  const [watched, setWatched] = useState(false);
+
+  useEffect(() => {
+    // Populate watched status on page load
+    async function updateWatchedStatus() {
+      const watched = await getWatchedStatus(movie.mediaId, 'movies');
+      setWatched(watched);
+    }
+    updateWatchedStatus();
+  }, [movie.mediaId]);
+
+  async function getWatchedStatus(mediaId, mediaType) {
+    const url = `/api/records/${mediaType}/${mediaId}`;
+
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+
+      return data.watched;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  async function toggleWatchedStatus(mediaId) {
+    const url = `/api/records/movies/${mediaId}`;
+
+    if (!watched) {
+      const response = await fetch(url, { method: 'POST' });
+      const data = await response.json();
+    } else {
+      const response = await fetch(url, { method: 'DELETE' });
+    }
+
+    setWatched(!watched);
+  }
 
   const year = movie.date ? DateTime.fromISO(movie.date).toLocaleString({year: 'numeric'}) : null;
   const yearString = year ? `(${year})` : null;
@@ -28,7 +66,7 @@ function Movie({ movie, credits }) {
         <MediaTypeBadge mediaType="movie" className="mb-2" />
 
         <div className="flex items-center mb-3">
-          <Indicator id={router.query.id} mediaType="movies" className="mr-2" />
+          <Checkbox id={router.query.id} mediaType="movies" watched={watched} onIndicatorClick={() => toggleWatchedStatus(movie.mediaId)} className="mr-2" />
 
           <h1 className="inline-block font-bold mb-0 text-5xl">
             {movie.title} {yearString}
@@ -63,6 +101,7 @@ export async function getServerSideProps({ params }) {
     const data = await response.json();
 
     const movie = {
+      mediaId: data.id,
       genres: data.genres,
       website: data.homepage,
       overview: data.overview,

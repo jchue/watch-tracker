@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { DateTime } from 'luxon';
@@ -8,6 +9,55 @@ import Episode from '../../../../components/Episode';
 
 function Season({ season }) {
   const router = useRouter();
+
+  const [episodes, setEpisodes] = useState(season.episodes);
+
+  useEffect(() => {
+    // Populate watched status on page load
+    async function updateWatchedStatus() {
+      setEpisodes(await Promise.all(season.episodes.map(async (episode) => {
+        const watched = await getWatchedStatus(episode.mediaId, 'shows');
+    
+        return {
+          ...episode,
+          watched,
+        }
+      })));
+    }
+    updateWatchedStatus();
+  }, [season.number]);
+
+  async function getWatchedStatus(mediaId, mediaType) {
+    const url = `/api/records/${mediaType}/${mediaId}`;
+
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+
+      return data.watched;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  async function toggleWatchedStatus(number) {
+    setEpisodes(await Promise.all(episodes.map(async (episode) => {
+      if (episode.number === number) {
+        const url = `/api/records/shows/${episode.mediaId}`;
+
+        if (!episode.watched) {
+          const response = await fetch(url, { method: 'POST' });
+          const data = await response.json();
+        } else {
+          const response = await fetch(url, { method: 'DELETE' });
+        }
+
+        return { ...episode, watched: !episode.watched };
+      } else {
+        return episode;
+      }
+    })));
+  }
 
   const startYear = season.startDate ? DateTime.fromISO(season.startDate).toLocaleString({year: 'numeric'}) : null;
   const startYearString = startYear ? `(${startYear})` : null;
@@ -53,22 +103,14 @@ function Season({ season }) {
             </tr>
           </thead>
           <tbody>
-            <Episodes episodes={season.episodes} />
+          {episodes.map((episode) =>
+            <Episode key={episode.number} number={episode.number} title={episode.title} date={episode.date} stillPath={episode.stillPath} votes={episode.votes} score={episode.score} overview={episode.overview} mediaId={episode.mediaId} watched={episode.watched} onStatusChange={() => toggleWatchedStatus(episode.number)} />
+          )}
           </tbody>
         </table>
       </section>
     </div>
   );
-}
-
-function Episodes(props) {
-  if (props.episodes) {
-    return (
-      props.episodes.map((episode) =>
-        <Episode key={episode.number} number={episode.number} title={episode.title} date={episode.date} stillPath={episode.stillPath} votes={episode.votes} score={episode.score} overview={episode.overview} mediaId={episode.id} />
-      )
-    );
-  }
 }
 
 export async function getServerSideProps({ params }) {
@@ -82,7 +124,7 @@ export async function getServerSideProps({ params }) {
 
   const episodes = data.episodes.map((episode) => {
     return {
-      id: episode.id,
+      mediaId: episode.id,
       number: episode.episode_number,
       title: episode.name,
       date: episode.air_date,

@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { DateTime } from 'luxon';
 import { DesktopComputerIcon } from '@heroicons/react/solid';
-import Indicator from './Indicator';
+import Checkbox from './Checkbox';
 import Score from './Score';
 
-function Episode({ mediaId, number, title, date, votes, score, overview, stillPath }) {
+function Episode({ mediaId, number, watched, onStatusChange, title, date, votes, score, overview, stillPath }) {
   const [visible, setVisible] = useState(false);
 
   function toggleEpisodeDetails() {
@@ -21,7 +21,7 @@ function Episode({ mediaId, number, title, date, votes, score, overview, stillPa
       {/* Initial table row */}
       <tr className="border-t text-sm border-gray-200 cursor-pointer hover:bg-gray-100 transition-colors duration-200">
         <td className="p-3 pl-8 text-center">
-          <Indicator id={mediaId} mediaType="shows" />
+          <Checkbox id={mediaId} mediaType="shows" watched={watched} onIndicatorClick={onStatusChange} />
         </td>
 
         <td className={'p-3 text-right transition-all duration-200' + (visible ? ' font-bold text-lg' : '')} onClick={toggleEpisodeDetails}>
