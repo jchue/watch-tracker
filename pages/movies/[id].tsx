@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { DateTime } from 'luxon';
+import { collection, doc, addDoc, getDocs, deleteDoc, query, where, serverTimestamp } from 'firebase/firestore';
+import { db } from '../../lib/firestore';
+import { userId } from '../../lib/auth';
 import { DesktopComputerIcon } from '@heroicons/react/solid';
 import Genres from '../../components/Genres';
 import Credits from '../../components/Credits';
@@ -17,36 +20,44 @@ function Movie({ movie, credits }) {
   useEffect(() => {
     // Populate watched status on page load
     async function updateWatchedStatus() {
-      const watched = await getWatchedStatus(movie.mediaId, 'movies');
+      const watched = await getWatchedStatus(movie.movieId, 'movies');
       setWatched(watched);
     }
     updateWatchedStatus();
-  }, [movie.mediaId]);
+  }, [movie.movieId]);
 
-  async function getWatchedStatus(mediaId, mediaType) {
-    const url = `/api/records/${mediaType}/${mediaId}`;
+  async function getWatchedStatus(movieId) {
+    const q = query(collection(db, 'movieRecords'), where('movieId', '==', parseInt(movieId)), where('uid', '==', userId));
 
-    try {
-      const response = await fetch(url);
-      const data = await response.json();
-
-      return data.watched;
-    } catch (error) {
-      return false;
+    const querySnapshot = await getDocs(q);
+    const record = await querySnapshot.docs[0];
+    
+    if (record) {
+      return record.data().watched;
+    } else {
+     return false;
     }
   }
 
-  async function toggleWatchedStatus(mediaId) {
-    const url = `/api/records/movies/${mediaId}`;
-
+  async function toggleWatchedStatus(movieId) {
     if (!watched) {
-      const response = await fetch(url, { method: 'POST' });
-      const data = await response.json();
-    } else {
-      const response = await fetch(url, { method: 'DELETE' });
-    }
+      const docRef = await addDoc(collection(db, 'movieRecords'), {
+        uid: userId,
+        movieId: parseInt(movieId),
+        watched: true,
+        timestamp: serverTimestamp(),
+      });
 
-    setWatched(!watched);
+      setWatched(true);
+    } else {
+      const q = query(collection(db, 'movieRecords'), where('movieId', '==', parseInt(movieId)), where('uid', '==', userId));
+      const querySnapshot = await getDocs(q);
+      const record = await querySnapshot.docs[0];
+
+      await deleteDoc(doc(db, 'movieRecords', record.id));
+
+      setWatched(false);
+    }
   }
 
   const year = movie.date ? DateTime.fromISO(movie.date).toLocaleString({year: 'numeric'}) : null;
@@ -66,7 +77,7 @@ function Movie({ movie, credits }) {
         <MediaTypeBadge mediaType="movie" className="mb-2" />
 
         <div className="flex items-center mb-3">
-          <Checkbox id={router.query.id} mediaType="movies" watched={watched} onIndicatorClick={() => toggleWatchedStatus(movie.mediaId)} className="mr-2" />
+          <Checkbox id={router.query.id} mediaType="movies" watched={watched} onIndicatorClick={() => toggleWatchedStatus(movie.movieId)} className="mr-2" />
 
           <h1 className="inline-block font-bold mb-0 text-5xl">
             {movie.title} {yearString}
@@ -101,7 +112,7 @@ export async function getServerSideProps({ params }) {
     const data = await response.json();
 
     const movie = {
-      mediaId: data.id,
+      movieId: data.id,
       genres: data.genres,
       website: data.homepage,
       overview: data.overview,
@@ -114,11 +125,11 @@ export async function getServerSideProps({ params }) {
     return movie;
   }
 
-  async function getMovieCredits(id) {
+  async function getMovieCredits(movieId) {
     const baseUrl = process.env.BACKEND_BASE_URL;
     const key = process.env.BACKEND_API_KEY;
 
-    const url = `${baseUrl}/movie/${id}/credits?api_key=${key}`;
+    const url = `${baseUrl}/movie/${movieId}/credits?api_key=${key}`;
 
     const response = await fetch(url);
     const data = await response.json();

@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { DateTime } from 'luxon';
+import { collection, doc, addDoc, getDocs, deleteDoc, query, where, serverTimestamp } from 'firebase/firestore';
+import { db } from '../../../../lib/firestore';
+import { userId } from '../../../../lib/auth';
 import { ArrowCircleLeftIcon } from '@heroicons/react/outline';
 import { DesktopComputerIcon } from '@heroicons/react/solid';
 import MediaTypeBadge from '../../../../components/MediaTypeBadge';
@@ -16,7 +19,7 @@ function Season({ season }) {
     // Populate watched status on page load
     async function updateWatchedStatus() {
       setEpisodes(await Promise.all(season.episodes.map(async (episode) => {
-        const watched = await getWatchedStatus(episode.mediaId, 'shows');
+        const watched = await getWatchedStatus(router.query.id, router.query.number, episode.number);
     
         return {
           ...episode,
@@ -27,29 +30,49 @@ function Season({ season }) {
     updateWatchedStatus();
   }, [season.number]);
 
-  async function getWatchedStatus(mediaId, mediaType) {
-    const url = `/api/records/${mediaType}/${mediaId}`;
+  async function getWatchedStatus(showId, seasonNumber, episodeNumber) {
+    const q = query(
+      collection(db, 'showRecords'),
+      where('showId', '==', parseInt(showId)),
+      where('seasonNumber', '==', parseInt(seasonNumber)),
+      where('episodeNumber', '==', parseInt(episodeNumber)),
+      where('uid', '==', userId)
+    );
 
-    try {
-      const response = await fetch(url);
-      const data = await response.json();
-
-      return data.watched;
-    } catch (error) {
-      return false;
+    const querySnapshot = await getDocs(q);
+    const record = await querySnapshot.docs[0];
+    
+    if (record) {
+      return record.data().watched;
+    } else {
+     return false;
     }
   }
 
-  async function toggleWatchedStatus(number) {
+  async function toggleWatchedStatus(showId, seasonNumber, episodeNumber) {
     setEpisodes(await Promise.all(episodes.map(async (episode) => {
-      if (episode.number === number) {
-        const url = `/api/records/shows/${episode.mediaId}`;
-
+      if (episode.number === episodeNumber) {
         if (!episode.watched) {
-          const response = await fetch(url, { method: 'POST' });
-          const data = await response.json();
+          const docRef = await addDoc(collection(db, 'showRecords'), {
+            uid: userId,
+            showId: parseInt(showId),
+            seasonNumber: parseInt(seasonNumber),
+            episodeNumber: parseInt(episodeNumber),
+            watched: true,
+            timestamp: serverTimestamp(),
+          });
         } else {
-          const response = await fetch(url, { method: 'DELETE' });
+          const q = query(
+            collection(db, 'showRecords'),
+            where('showId', '==', parseInt(showId)),
+            where('seasonNumber', '==', parseInt(seasonNumber)),
+            where('episodeNumber', '==', parseInt(episodeNumber)),
+            where('uid', '==', userId)
+          );
+          const querySnapshot = await getDocs(q);
+          const record = await querySnapshot.docs[0];
+
+          await deleteDoc(doc(db, 'showRecords', record.id));
         }
 
         return { ...episode, watched: !episode.watched };
@@ -104,7 +127,7 @@ function Season({ season }) {
           </thead>
           <tbody>
           {episodes.map((episode) =>
-            <Episode key={episode.number} number={episode.number} title={episode.title} date={episode.date} stillPath={episode.stillPath} votes={episode.votes} score={episode.score} overview={episode.overview} mediaId={episode.mediaId} watched={episode.watched} onStatusChange={() => toggleWatchedStatus(episode.number)} />
+            <Episode key={episode.number} number={episode.number} title={episode.title} date={episode.date} stillPath={episode.stillPath} votes={episode.votes} score={episode.score} overview={episode.overview} mediaId={episode.episodeId} watched={episode.watched} onStatusChange={() => toggleWatchedStatus(router.query.id, router.query.number, episode.number)} />
           )}
           </tbody>
         </table>
@@ -124,7 +147,7 @@ export async function getServerSideProps({ params }) {
 
   const episodes = data.episodes.map((episode) => {
     return {
-      mediaId: episode.id,
+      episodeId: episode.id,
       number: episode.episode_number,
       title: episode.name,
       date: episode.air_date,
@@ -136,6 +159,7 @@ export async function getServerSideProps({ params }) {
   });
 
   let season = {
+    number: data.season_number,
     startDate: data.air_date,
     episodes,
     overview: data.overview,
