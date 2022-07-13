@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { DateTime } from 'luxon';
@@ -9,77 +9,137 @@ import { ArrowCircleLeftIcon } from '@heroicons/react/outline';
 import { DesktopComputerIcon } from '@heroicons/react/solid';
 import MediaTypeBadge from '../../../../components/MediaTypeBadge';
 import Episode from '../../../../components/Episode';
+import Checkbox from '../../../../components/Checkbox';
 
 function Season({ season }) {
   const router = useRouter();
 
-  const [episodes, setEpisodes] = useState(season.episodes);
+  const [seasonWatched, setSeasonWatched] =useState(false);
+  const [storedRecords, setStoredRecords] = useState(new Map());
 
+  /**
+   * Populate watched status on page load
+   */
   useEffect(() => {
-    // Populate watched status on page load
     async function updateWatchedStatus() {
-      setEpisodes(await Promise.all(season.episodes.map(async (episode) => {
-        const watched = await getWatchedStatus(router.query.id, router.query.number, episode.number);
-    
-        return {
-          ...episode,
-          watched,
-        }
-      })));
+      const episodeRecords = await getSeasonWatchedStatus(router.query.id, router.query.number);
+
+      let storedRecordsCache = new Map();
+      episodeRecords.forEach((record) => {
+        storedRecordsCache.set(record.episodeNumber, record);
+      });
+      setStoredRecords(new Map(storedRecordsCache));
     }
     updateWatchedStatus();
   }, [season.number]);
 
-  async function getWatchedStatus(showId, seasonNumber, episodeNumber) {
+  /**
+   * Detect when all episodes in season are watched
+   */
+  useEffect(() => {
+    // Only count where watched === true for futureproofing
+    const storedRecordsArray = Array.from(storedRecords.values());
+    const watchedEpisodes = storedRecordsArray.filter((episode) => episode.watched);
+
+    if (watchedEpisodes.length === season.episodes.length) {
+      setSeasonWatched(true);
+    } else {
+      setSeasonWatched(false);
+    }
+  }, [storedRecords.size]);
+
+  async function getSeasonWatchedStatus(showId, seasonNumber) {
     const q = query(
       collection(db, 'showRecords'),
       where('showId', '==', parseInt(showId)),
       where('seasonNumber', '==', parseInt(seasonNumber)),
-      where('episodeNumber', '==', parseInt(episodeNumber)),
       where('uid', '==', userId)
     );
 
     const querySnapshot = await getDocs(q);
-    const record = await querySnapshot.docs[0];
     
-    if (record) {
-      return record.data().watched;
+    let episodes = [];
+    querySnapshot.forEach((doc) => {
+      episodes.push(doc.data());
+    });
+
+    return episodes;
+  }
+
+  async function toggleEpisodeWatchedStatus(showId, seasonNumber, episodeNumber) {
+    if (!storedRecords.has(episodeNumber)) {
+      const record = {
+        uid: userId,
+        showId: parseInt(showId),
+        seasonNumber: parseInt(seasonNumber),
+        episodeNumber: parseInt(episodeNumber),
+        watched: true,
+        timestamp: serverTimestamp(),
+      };
+
+      await addDoc(collection(db, 'showRecords'), record);
+
+      const storedRecordsCache = storedRecords;
+      storedRecordsCache.set(record.episodeNumber, record);
+      setStoredRecords(new Map(storedRecordsCache));
     } else {
-     return false;
+      const q = query(
+        collection(db, 'showRecords'),
+        where('showId', '==', parseInt(showId)),
+        where('seasonNumber', '==', parseInt(seasonNumber)),
+        where('episodeNumber', '==', parseInt(episodeNumber)),
+        where('uid', '==', userId)
+      );
+      const querySnapshot = await getDocs(q);
+      const record = await querySnapshot.docs[0];
+
+      await deleteDoc(doc(db, 'showRecords', record.id));
+
+      // Remove from watched episodes
+      let storedRecordsCache = storedRecords;
+      storedRecordsCache.delete(parseInt(episodeNumber));
+      setStoredRecords(new Map(storedRecordsCache));
     }
   }
 
-  async function toggleWatchedStatus(showId, seasonNumber, episodeNumber) {
-    setEpisodes(await Promise.all(episodes.map(async (episode) => {
-      if (episode.number === episodeNumber) {
-        if (!episode.watched) {
-          const docRef = await addDoc(collection(db, 'showRecords'), {
-            uid: userId,
-            showId: parseInt(showId),
-            seasonNumber: parseInt(seasonNumber),
-            episodeNumber: parseInt(episodeNumber),
-            watched: true,
-            timestamp: serverTimestamp(),
-          });
-        } else {
-          const q = query(
-            collection(db, 'showRecords'),
-            where('showId', '==', parseInt(showId)),
-            where('seasonNumber', '==', parseInt(seasonNumber)),
-            where('episodeNumber', '==', parseInt(episodeNumber)),
-            where('uid', '==', userId)
-          );
-          const querySnapshot = await getDocs(q);
-          const record = await querySnapshot.docs[0];
+  async function toggleSeasonWatchedStatus(showId, seasonNumber) {
+    if (seasonWatched) {
+      const q = query(
+        collection(db, 'showRecords'),
+        where('showId', '==', parseInt(showId)),
+        where('seasonNumber', '==', parseInt(seasonNumber)),
+        where('uid', '==', userId)
+      );
 
-          await deleteDoc(doc(db, 'showRecords', record.id));
-        }
+      const querySnapshot = await getDocs(q);
 
-        return { ...episode, watched: !episode.watched };
-      } else {
-        return episode;
-      }
-    })));
+      querySnapshot.forEach(async (record) => {
+        await deleteDoc(doc(db, 'showRecords', record.id));
+      });
+
+      const storedRecordsCache = storedRecords;
+      storedRecordsCache.clear();
+      setStoredRecords(new Map(storedRecordsCache));
+    } else {
+      let storedRecordsCache = new Map();
+
+      for (let i = 0; i < season.episodes.length; i++) {
+        const record = {
+          uid: userId,
+          showId: parseInt(showId),
+          seasonNumber: parseInt(seasonNumber),
+          episodeNumber: parseInt(season.episodes[i].number),
+          watched: true,
+          timestamp: serverTimestamp(),
+        };
+
+        await addDoc(collection(db, 'showRecords'), record);
+
+        storedRecordsCache.set(record.episodeNumber, record);
+      };
+
+      setStoredRecords(new Map(storedRecordsCache));
+    }
   }
 
   const startYear = season.startDate ? DateTime.fromISO(season.startDate).toLocaleString({year: 'numeric'}) : null;
@@ -97,9 +157,11 @@ function Season({ season }) {
         }
 
         <div>
-          <MediaTypeBadge mediaType="show" className="mb-2" />
+          <MediaTypeBadge mediaType="show" className="block mb-2" />
 
-          <h1 className="font-bold text-5xl mb-2">{season.title} {startYearString}</h1>
+          <Checkbox id={router.query.id} mediaType="shows" watched={seasonWatched} onIndicatorClick={() => toggleSeasonWatchedStatus(router.query.id, router.query.number)} className="align-middle inline-block mr-2" />
+
+          <h1 className="align-middle inline-block font-bold text-5xl mb-2">{season.title} {startYearString}</h1>
 
           <Link href={`/shows/${router.query.id}`}>
             <a className="block mb-4 text-xl text-indigo-600 hover:text-indigo-500">
@@ -126,8 +188,8 @@ function Season({ season }) {
             </tr>
           </thead>
           <tbody>
-          {episodes.map((episode) =>
-            <Episode key={episode.number} number={episode.number} title={episode.title} date={episode.date} stillPath={episode.stillPath} votes={episode.votes} score={episode.score} overview={episode.overview} mediaId={episode.episodeId} watched={episode.watched} onStatusChange={() => toggleWatchedStatus(router.query.id, router.query.number, episode.number)} />
+          {season.episodes.map((episode) =>
+            <Episode key={episode.number} number={episode.number} title={episode.title} date={episode.date} stillPath={episode.stillPath} votes={episode.votes} score={episode.score} overview={episode.overview} mediaId={episode.episodeId} watched={storedRecords.has(episode.number)} onStatusChange={() => toggleEpisodeWatchedStatus(router.query.id, router.query.number, episode.number)} />
           )}
           </tbody>
         </table>
